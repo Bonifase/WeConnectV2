@@ -1,0 +1,40 @@
+{% extends 'layout.html' %}
+
+{% block body  %}
+<div class="jumbotron text-center">
+    <h3><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Dashboard <small>Manage Your Business:  {{session.Username}}</small></h3> 
+    <a class="btn btn-success" href="/add_business">Create a Business Profile</a>
+    <p><div class="text-left"><h5> Available Businesses</h5></div></p>
+    <hr>
+    <table class="table table-striped">
+        <tr>
+            
+            <th>Business Id</th>
+            <th>Business Name</th>
+            <th>Cartegory</th>
+            <th>Location</th>
+            <th>Date Created</th>
+            <th>Edit Business</th>
+            <th>Remove Business</th>
+
+            
+        </tr>
+        {% for item in Lists %}
+        <tr>
+            <td>{{item.Id}}</td>
+            <td>{{item.Name}}</td>
+            <td>{{item.Cartegory}}</td>
+            <td>{{item.Location}}</td>
+            <td>{{item.Date}}</td>
+            <td><a href="edit_business/{{item.Id}}" class="btn btn-default pullright">Edit Business</a></td>
+            <td>
+                <form action="{{url_for('delete_business', Id=item.Id)}}" method="POST">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <input type="submit" value="Remove Business" class="btn btn-danger">
+                </form>
+            </td>
+        </tr>
+      {% endfor %}
+    </table>
+</div>
+ {% endblock %} 

@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+{% block body  %}
+<div class="jumbotron text-center">
+<h3>Add Business Profile</h3>
+{% from "includes/_formhelpers.html" import render_field %}
+<form method=post>
+  <dl>
+    {{ render_field(form.Id) }}
+    {{ render_field(form.Name) }}
+    {{ render_field(form.Cartegory) }}
+    {{ render_field(form.Location) }}
+    {{ render_field(form.Date) }}
+   
+  </dl>
+  <input type="submit" class="btn btn-primary" value="Submit" ></th>
+  <th><h4><a href="/dashboard" class="btn btn-danger">Cancel</a></h4></th>    
+       
+</form>
+</div>
+{% endblock %}
