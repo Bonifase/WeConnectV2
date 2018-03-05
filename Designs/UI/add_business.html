@@ -1,0 +1,73 @@
+<html>
+    <head>
+        <meta charset="utf -8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>WeConnect</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+         integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+         <link rel="stylesheet" href="style.css">
+        
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <a class="navbar-brand" href="home.html">WeConnect</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+          
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                  <a class="nav-link" href="home.html">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="about.html">About</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="businesses.html">View Businesses</a>
+                </li>
+                <li class="nav-item">
+                        <form class="form-inline my-2 my-lg-0">
+                                <input class="form-control mr-sm-2" type="search" placeholder="Search Business" aria-label="Search">
+                                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Go</button>
+                        </form>
+                </li>
+              </ul>
+              <ul class="nav navbar-nav ml-auto" >
+                <li><a class="nav-link" href="register.html">Register</a></li>
+                <li><a class="nav-link" href="login.html">Login</a></li> 
+              </ul>
+            </div>
+        </nav>
+        <div class="container text-center">
+          <h2>Create Business</h2>
+            <form class="my-form" method="POST" action="">
+                <div class="form.group">
+                <label for="id">Id</label>
+                <input type="text" name="id" class="form-control" id="username" placeholder="Id">
+                </div>
+                <div class="form.group">
+                  <label for="name">Name</label>
+                  <input type="text" name="name" class="form-control" id="name" placeholder="Name">
+                </div>
+                <div class="form.group">
+                  <label for="category">Category</label>
+                  <input type="text" name="category" class="form-control" id="category" placeholder="Category">
+                </div>
+                <div class="form.group">
+                  <label for="location">Location</label>
+                  <input type="text" name="location" class="form-control" id="location" placeholder="Location">
+                </div>
+                <div class="form-group">
+                  <label for="password">Date</label>
+                  <input type="date-time" name="date" class="form-control" id="date" placeholder="Date">
+                </div>
+                
+                  <p><input type="submit" class="btn btn-primary" value="Submit" ></p>
+            </form>
+      </div>
+         
+         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
+         integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+    </body>
+</html>
