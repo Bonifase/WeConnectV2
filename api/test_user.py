@@ -12,6 +12,7 @@ class AppTestCase(unittest.TestCase):
         self.app = app.app.test_client()
         self.data = {"username":"john", "email":"email@gmail.com","password":"12345"}
         self.data2 = {"username":"Bill", "email":"bill@gmail.com","password":"12345"}
+        self.data3 = {"username":"Bills", "email":"bills@gmail.com","password":"1234567"}
        
         
 
@@ -30,6 +31,19 @@ class AppTestCase(unittest.TestCase):
         rs2 = json.loads(response2.data.decode())
         self.assertEqual(rs2["message"], "User Details Exist")
         self.assertEqual(response2.status_code, 406)
+
+    def test_user_login(self):
+        response = self.app.post('/v1/user_login', data = json.dumps(self.data2) , content_type = 'application/json')
+        rs = json.loads(response.data.decode())
+        self.assertEqual(rs["message"], "Login Successful")
+        self.assertEqual(response.status_code, 200)
+    def test_unregistered_user(self):
+        response = self.app.post('/v1/user_login', data = json.dumps(self.data3) , content_type = 'application/json')
+        rs = json.loads(response.data.decode())
+        self.assertEqual(rs["message"], "Wrong Login Details")
+        self.assertEqual(response.status_code, 406)
+
+
 
 
         
