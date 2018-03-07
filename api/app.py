@@ -23,6 +23,19 @@ def register_user():
         users.append(user)
     return make_response(jsonify({"status": "ok", "message": "Registered Successful"}), 201)
 
+#Login user
+@app.route('/v1/user_login',  methods = ['POST'])
+def user_login():
+    data = request.get_json()
+    username = data['username']
+    password = data['password']
+    #check if the user details exist in the list, otherwise deny access.
+    available_usernames = [x.username for x in users]
+    available_passwords = [x.password for x in users]
+    if username in available_usernames and password in available_passwords:
+        return make_response(jsonify({"status": "ok", "message": "Login Successful"}), 200)
+    else:
+        return make_response(jsonify({"status": "Forbidden", "message": "Wrong Login Details"}), 406)
    
 
 if __name__ == '__main__':
