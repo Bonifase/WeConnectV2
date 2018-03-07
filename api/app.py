@@ -25,18 +25,6 @@ def register_user():
 
    
 
-
-@app.route('/v1/user_login', methods = ['POST'])
-def user_login():
-    data = request.get_json(force = True)
-    username = data['username']
-    password = data['password']
-    if username in users and password in users:
-        return make_response(jsonify({"status": "NOT_ACCEPTABLE", "message": "User Details Exist"}), 406)
-    
-
-    return response
-
 if __name__ == '__main__':
 
     app.run(debug=True)
