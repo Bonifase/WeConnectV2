@@ -17,7 +17,8 @@ class AppTestCase(unittest.TestCase):
 
     def test_register_user(self):
         response = self.app.post('/v1/register_user', data = json.dumps(self.data) , content_type = 'application/json')
-    
+        rs = json.loads(response.data.decode())
+        self.assertEqual(rs["message"], "Registered Successful")
         self.assertEqual(response.status_code, 201)
         
    
