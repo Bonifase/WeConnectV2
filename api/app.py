@@ -30,10 +30,14 @@ def user_login():
     username = data['username']
     password = data['password']
     #check if the user details exist in the list, otherwise deny access.
-    available_usernames = [x.username for x in users]
-    available_passwords = [x.password for x in users]
-    if username in available_usernames and password in available_passwords:
-        return make_response(jsonify({"status": "ok", "message": "Login Successful"}), 200)
+    user = [x for x in users if x.username == username]
+    if user:
+        if password == user[0].password:
+            return make_response(jsonify({"status": "ok", "message": "Login Successful"}), 200)
+
+        else:
+            return make_response(jsonify({"status": "Forbidden", "message": "Wrong Password"}), 406)
+
     else:
         return make_response(jsonify({"status": "Forbidden", "message": "Wrong Login Details"}), 406)
    
