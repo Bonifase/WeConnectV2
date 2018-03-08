@@ -74,7 +74,28 @@ def user_logout():
 
     else:
         return make_response(jsonify({"status": "Forbidden", "message": "Wrong Login Details"}), 409)
-   
+
+
+#Endpoint to Create new business
+@app.route('/api/v1/auth/create_business', methods = ['POST'])
+def create_business():
+    data = request.get_json()
+    Id = data['Id']
+    name = data["name"]
+    cartegory = data["cartegory"]
+    location = data["location"]
+    description = data["Review"]
+     #check if the business details already in the list, otherwise create the object in the list
+    available_Ids = [x.Id for x in businesses]
+    if Id in available_Ids:
+        return make_response(jsonify({"status": "NOT_ACCEPTABLE", "message": "Business Exist"}), 409)
+    else:
+        business = Business(Id, name, cartegory, location, description)
+        businesses.append(business)
+    return make_response(jsonify({"status": "ok", "message": "Created Successful"}), 201)
+
+
+
 
 
 
