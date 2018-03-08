@@ -3,5 +3,9 @@ class User:
         self.username = username
         self.email = email
         self.password = password
+
+    def reset_password(self, resetpassword):
+        self.password = resetpassword
+
     
 
