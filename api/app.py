@@ -26,8 +26,8 @@ def register_user():
     return make_response(jsonify({"status": "ok", "message": "Registered Successful"}), 201)
 
 #Endpoint to Login user
-@app.route('/api/v1/auth/user_login',  methods = ['POST'])
-def user_login():
+@app.route('/api/v1/auth/login',  methods = ['POST'])
+def login():
     data = request.get_json()
     username = data['username']
     password = data['password']
@@ -58,8 +58,8 @@ def reset_password():
     else:
         return make_response(jsonify({"status": "Forbidden", "message": "Type Different Password"}), 409)
 #Logout User
-@app.route('/api/v1/auth/user_logout', methods = ['POST'])
-def user_logout():
+@app.route('/api/v1/auth/logout', methods = ['POST'])
+def logout():
     data = request.get_json()
     username = data['username']
     password = data['password']
@@ -80,24 +80,26 @@ def user_logout():
 @app.route('/api/v1/auth/create_business', methods = ['POST'])
 def create_business():
     data = request.get_json()
-    Id = data['Id']
     name = data["name"]
-    cartegory = data["cartegory"]
+    category = data["category"]
     location = data["location"]
-    description = data["Review"]
+    description = data["description"]
      #check if the business details already in the list, otherwise create the object in the list
-    available_Ids = [x.Id for x in businesses]
-    if Id in available_Ids:
-        return make_response(jsonify({"status": "NOT_ACCEPTABLE", "message": "Business Exist"}), 409)
+    available_names = [x.name for x in businesses]
+    if name in available_names:
+        return make_response(jsonify({"status": "Conflict", "message": "Business already Exist, use another name"}), 409)
     else:
-        business = Business(Id, name, cartegory, location, description)
+        business = Business( name, category, location, description)
         businesses.append(business)
-    return make_response(jsonify({"status": "ok", "message": "Created Successful"}), 201)
+        myresponse = {'name':business.name, 'category':business.category, 'location':business.location, 'description':business.description}
+    return make_response(jsonify(myresponse), 201)
 
-
-
-
-
+#Endpoint to view all the businesses
+@app.route('/api/v1/auth/view_businesses', methods = ['GET'])
+def view_businesses():
+    mybusinesses = [{x.id : [x.name, x.category, x.location] for x in businesses}]
+    return make_response(jsonify({"status": "ok", "message": "Available Businesses", "businesses":mybusinesses}), 200)
+   
 
 if __name__ == '__main__':
 
