@@ -35,7 +35,22 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(result["message"], "Available Businesses")
         self.assertEqual(response.status_code, 200) 
 
+    def test_update_business(self):
+        response = self.app.put('/api/v1/auth/update_business/1', data = json.dumps(self.data), content_type = 'application/json')
+        print('response////////', response)
+        result = json.loads(response.get_data.decode())
+        self.assertEqual(result["message"], "Available Business")
+        self.assertEqual(response.status_code, 404)
+
+    def test_delete_business(self):
+        response = self.app.delete('/api/v1/auth/delete_business/1', data = json.dumps(self.data), content_type = 'application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result["message"], "Business Deleted")
+        self.assertEqual(response.status_code, 200)
  
+        
+
+
 
 if __name__ == '__main__':
     unittest.main()
