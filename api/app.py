@@ -12,7 +12,7 @@ businesses = []
 business_reviews = []
 
 #Endpoint to Register user and ssaving the details in a list called users
-@app.route('/api/v1/auth/register_user',  methods = ['POST'])
+@app.route('/api/v1/auth/register',  methods = ['POST'])
 def register_user():
     data = request.get_json()
     username = data['username']
@@ -46,7 +46,7 @@ def login():
         return make_response(jsonify({"status": "Conflict", "message": "Wrong Login Details"}), 409)
    
 #Reset password
-@app.route('/api/v1/auth/reset_password', methods = ['POST'])
+@app.route('/api/v1/auth/reset-password', methods = ['POST'])
 def reset_password():
     data = request.get_json()
     username = data['username']
@@ -79,7 +79,7 @@ def logout():
 
 
 #Create new business
-@app.route('/api/v1/auth/create_business', methods = ['POST'])
+@app.route('/api/v1/auth/businesses', methods = ['POST'])
 def create_business():
     data = request.get_json()
     name = data["name"]
@@ -97,13 +97,13 @@ def create_business():
     return make_response(jsonify(myresponse), 201)
 
 #Get all the businesses
-@app.route('/api/v1/auth/view_businesses', methods = ['GET'])
+@app.route('/api/v1/auth/businesses', methods = ['GET'])
 def view_businesses():
     mybusinesses = [{x.id : [x.name, x.category, x.location] for x in businesses}]
     return make_response(jsonify({"status": "ok", "message": "Available Businesses", "businesses":mybusinesses}), 200)
 
 #Get a business by id
-@app.route('/api/v1/auth/view_business/<int:id>/')
+@app.route('/api/v1/auth/business/<int:id>/')
 def get_business(id):
     mybusiness = [x for x in businesses if x.id == id]
     if mybusiness:
@@ -113,7 +113,7 @@ def get_business(id):
          return  make_response(jsonify({"status": "not found", "message": "No such Businesses",}), 404)
 
 #Update business
-@app.route('/api/v1/auth/update_business/<int:id>/', methods = ['PUT'])
+@app.route('/api/v1/auth/business/<int:id>/', methods = ['PUT'])
 def update_business(id):
     data = request.get_json()
     newname = data["name"]
@@ -128,7 +128,7 @@ def update_business(id):
          return  make_response(jsonify({"status": "not found", "message": "No such Businesses",}), 404)
 
 #Delete business
-@app.route('/api/v1/auth/delete_business/<int:id>/', methods = ['DELETE'])
+@app.route('/api/v1/auth/business/<int:id>/', methods = ['DELETE'])
 def delete_business(id):
     mybusiness = [x for x in businesses if x.id == id]
     if mybusiness:
@@ -154,7 +154,7 @@ def reviews(businessid):
     return make_response(jsonify({"status": "CREATED", "message": "Review added Successfully"}), 201)
 
 #Get all reviews for a business
-@app.route('/api/v1/auth/<int:businessid>/myreviews', methods = ['GET'])
+@app.route('/api/v1/auth/<int:businessid>/reviews', methods = ['GET'])
 def myreviews(businessid):
     myreviews = [{x.id : [x.businessid, x.reviewbody] for x in business_reviews}]
     return make_response(jsonify({"status": "ok", "message": "Available reviews", "Reviews":myreviews}), 200)

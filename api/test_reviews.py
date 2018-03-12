@@ -19,7 +19,6 @@ class AppTestCase(unittest.TestCase):
 
     def test_reviews(self):
         response = self.app.post('/api/v1/auth/1/reviews', data = json.dumps(self.data) , content_type = 'application/json')
-        print('ressuuuuuuuuult', response)
         result = json.loads(response.data.decode())
         self.assertEqual(result["message"], "Review added Successfully")
         self.assertEqual(response.status_code, 201)
@@ -35,7 +34,7 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(response2.status_code, 409)
     
     def test_myreviews(self):
-        response = self.app.get('/api/v1/auth/1/myreviews', data = json.dumps(self.data), content_type = 'application/json')
+        response = self.app.get('/api/v1/auth/1/reviews', data = json.dumps(self.data), content_type = 'application/json')
         result = json.loads(response.data.decode())
         self.assertEqual(result["message"], "Available reviews")
         self.assertEqual(response.status_code, 200) 
