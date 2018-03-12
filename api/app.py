@@ -21,13 +21,13 @@ def register_user():
     #check if the user details already in the list, otherwise add the details in the list
     available_emails = [x.email for x in users]
     if email in available_emails:
-        return make_response(jsonify({"status": "NOT_ACCEPTABLE", "message": "User Details Exist"}), 409)
+        return make_response(jsonify({"status": "Conflict", "message": "User Details Exist"}), 409)
     else:
         user = User(username, email, password)
         users.append(user)
     return make_response(jsonify({"status": "ok", "message": "Registered Successful"}), 201)
 
-#Endpoint to Login user
+#Login user
 @app.route('/api/v1/auth/login',  methods = ['POST'])
 def login():
     data = request.get_json()
@@ -40,12 +40,12 @@ def login():
             return make_response(jsonify({"status": "ok", "message": "Login Successful"}), 200)
 
         else:
-            return make_response(jsonify({"status": "Forbidden", "message": "Wrong Password"}), 409)
+            return make_response(jsonify({"status": "Conflict", "message": "Wrong Password"}), 409)
 
     else:
-        return make_response(jsonify({"status": "Forbidden", "message": "Wrong Login Details"}), 409)
+        return make_response(jsonify({"status": "Conflict", "message": "Wrong Login Details"}), 409)
    
-#Endpoint to Reset password
+#Reset password
 @app.route('/api/v1/auth/reset_password', methods = ['POST'])
 def reset_password():
     data = request.get_json()
@@ -55,10 +55,10 @@ def reset_password():
     user = [x for x in users if x.username == username]
     if user and password == user[0].password:
         user[0].reset_password(resetpassword)
-        return make_response(jsonify({"status": "ok", "message": "Reset Successful"}), 201)
+        return make_response(jsonify({"status": "Created", "message": "Reset Successful"}), 201)
        
     else:
-        return make_response(jsonify({"status": "Forbidden", "message": "Type Different Password"}), 409)
+        return make_response(jsonify({"status": "Conflict", "message": "Type Different Password"}), 409)
 #Logout User
 @app.route('/api/v1/auth/logout', methods = ['POST'])
 def logout():
@@ -72,13 +72,13 @@ def logout():
             return make_response(jsonify({"status": "ok", "message": "Logout Successful"}), 200)
 
         else:
-            return make_response(jsonify({"status": "Forbidden", "message": "Wrong Password"}), 409)
+            return make_response(jsonify({"status": "Conflict", "message": "Wrong Password"}), 409)
 
     else:
-        return make_response(jsonify({"status": "Forbidden", "message": "Wrong Login Details"}), 409)
+        return make_response(jsonify({"status": "Conflict", "message": "Wrong Login Details"}), 409)
 
 
-#Endpoint to Create new business
+#Create new business
 @app.route('/api/v1/auth/create_business', methods = ['POST'])
 def create_business():
     data = request.get_json()
@@ -96,7 +96,7 @@ def create_business():
         myresponse = {'name':business.name, 'category':business.category, 'location':business.location, 'description':business.description}
     return make_response(jsonify(myresponse), 201)
 
-#Endpoint to view all the businesses
+#Get all the businesses
 @app.route('/api/v1/auth/view_businesses', methods = ['GET'])
 def view_businesses():
     mybusinesses = [{x.id : [x.name, x.category, x.location] for x in businesses}]
@@ -139,7 +139,7 @@ def delete_business(id):
          return  make_response(jsonify({"status": "not found", "message": "No such Businesses",}), 404)
 
 #Add a review for a business
-@app.route('/api/v1/auth/<int:businessid>/review', methods = ['POST'])
+@app.route('/api/v1/auth/<int:businessid>/reviews', methods = ['POST'])
 def reviews(businessid):
     data = request.get_json()
     reviewbody = data["reviewbody"]
