@@ -17,11 +17,10 @@ This platform creates awareness for businesses and gives the users the ability t
 
 1. Create a requirements.txt file to store your dependencies.
 2. Setup Flask.
-3. Setup Flask.
-4. Setup Pylint 
-5. Setup unit testing libraries and ensure minimal tests 
-6. Setup PostgreSQL
-7. Setup SQLAlchemy
+3. Setup Pylint 
+4. Setup unit testing libraries and ensure minimal tests 
+5. Setup PostgreSQL
+6. Setup SQLAlchemy
 
 8. freeze the installed packages and store this setup in a requirements.txt file: use pip freeze > requirements.txt
 
@@ -44,14 +43,13 @@ This platform creates awareness for businesses and gives the users the ability t
 ## Deployment
 
 1. Use Heroku for deployment. 
-2. Sign up, download a few tools and then upload our app to the platform effortlessly.
-3. Download and install the Heroku CLI to enable deployment and manage application.
-4. Login into the Heroku Cli by running this command in the terminal: heroku login
-5. Add a Procfile to that application.
-6. Update the requirements file by running: pip freeze > requirements.txt
-7. Add this line of code: web: gunicorn app:app
-8. In the application folder run this command: heroku create WeConnect-api-heroku.
-9. WeConnect is the name of the application, this has to be unique across Heroku. 
+2. Sign up, Download and install the Heroku CLI and then upload our app to the platform effortlessly.
+3. Login into the Heroku Cli by running this command in the terminal: heroku login
+4. Add a Procfile to that application.
+5. Update the requirements file by running: pip freeze > requirements.txt
+6. Add this line of code: web: gunicorn app:app
+7. In the application folder run this command: heroku create WeConnect-api-heroku.
+8. WeConnect is the name of the application, this has to be unique across Heroku. 
 
 ## Built With
 
