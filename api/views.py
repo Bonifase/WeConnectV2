@@ -4,6 +4,7 @@ from flask import request,make_response, jsonify
 import json, jwt, datetime
 from functools import wraps
 
+
 users = User.query.all()
 businesses = Business.query.all()
 business_reviews = Review.query.all()
@@ -183,7 +184,6 @@ def business_category(current_user, category):
     business_category = Business.query.filter_by(category=category).all()
     for category in business_category:
         return make_response(jsonify({"status": "ok", "message": "All Businesses", "Available Businesses": {'category':category.name}}), 200)
-
 
 
 #Add a review for a business
