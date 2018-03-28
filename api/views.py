@@ -1,13 +1,21 @@
 from app import app
 from models.models import *
 from flask import request,make_response, jsonify
-import json, jwt, datetime
+from flask_login import LoginManager, login_required, logout_user
+import json, jwt, datetime	
+import flask_whooshalchemy as wa
 from functools import wraps
 
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+wa.whoosh_index(app,Business)
+
 users = User.query.all()
 businesses = Business.query.all()
-business_reviews = Review.query.all()
+
 
 def token_required(f):
     @wraps(f)
@@ -49,10 +57,7 @@ def register_user():
 @app.route('/api/auth/login',  methods = ['POST'])
 def login():
     auth = request.authorization
-
     data = request.get_json()
-    # username = data['username']
-    # password = data['password']
     #check if the user details exist in the list, otherwise deny access.
     if not auth or not auth.username or not auth.password:
         return make_response(jsonify({"status": "Conflict", "message": "Login required"}), 409)
@@ -74,12 +79,11 @@ def login():
 @token_required
 def reset_password(current_user):
     data = request.get_json()
-    username = data['username']
-    password = data['password']
     resetpassword = data['resetpassword']
-    user = [x for x in users if x.username == username]
-    if user and password == user[0].password:
-        user[0].password = resetpassword
+    user = current_user
+    if resetpassword != user.password:
+        user.password = resetpassword
+        db.session.add(user)
         db.session.commit()
         return make_response(jsonify({"status": "Created", "message": "Reset Successful"}), 201)
        
@@ -89,17 +93,12 @@ def reset_password(current_user):
 @app.route('/api/auth/logout', methods = ['POST'])
 @token_required
 def logout(current_user):
-    data = request.get_json()
-    username = data['username']
-    password = data['password']
-    #check if the user details exist in the list, otherwise deny access.
-    user = [x for x in users if x.username == username]
+    user = current_user
     if user:
-        if password == user[0].password:
-            return make_response(jsonify({"status": "ok", "message": "Logout Successful"}), 200)
-
-        else:
-            return make_response(jsonify({"status": "Conflict", "message": "Wrong Password"}), 409)
+        user.authenticated = False
+        db.session.commit()
+        logout_user()
+        return make_response(jsonify({"status": "ok", "message": "Logout Successful"}), 200)
 
     else:
         return make_response(jsonify({"status": "Conflict", "message": "Wrong Login Details"}), 409)
@@ -185,6 +184,14 @@ def business_category(current_user, category):
     for category in business_category:
         return make_response(jsonify({"status": "ok", "message": "All Businesses", "Available Businesses": {'category':category.name}}), 200)
 
+#search business
+@app.route('/api/search', methods = ['GET'])
+@token_required
+def search_business(current_user):
+    results = Business.query.whoosh_search(request.args.get('query')).all()
+
+    return jsonify(results)
+
 
 #Add a review for a business
 @app.route('/api/<int:businessid>/reviews', methods = ['POST'])
@@ -194,6 +201,7 @@ def reviews(current_user, businessid):
     reviewbody = data["reviewbody"]
     businessid = data['businessid']
      #check if the review details already in the list, otherwise create the review object in the list
+    business_reviews = Review.query.all()
     available_reviewbodies = [x.reviewbody for x in business_reviews ]
     if reviewbody in available_reviewbodies:
         return make_response(jsonify({"status": "Conflict", "message": "Review already Exist, use another description"}), 409)
@@ -207,6 +215,7 @@ def reviews(current_user, businessid):
 @app.route('/api/<int:businessid>/reviews', methods = ['GET'])
 @token_required
 def myreviews(current_user, businessid):
+    business_reviews = Review.query.all()
     myreviews = [{x.id : [x.businessid, x.reviewbody] for x in business_reviews}]
     return make_response(jsonify({"status": "ok", "message": "Available reviews", "Reviews":myreviews}), 200)
 
