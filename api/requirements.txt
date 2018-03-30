@@ -14,7 +14,6 @@ Flask-Migrate==2.1.1
 Flask-RESTful==0.3.6
 flask-restful-swagger==0.19
 Flask-Script==2.0.6
-Flask-SQLAlchemy==2.3.2
 Flask-WhooshAlchemy==0.56
 get==0.0.39
 idna==2.6
@@ -42,7 +41,6 @@ query-string==0.0.28
 request==0.0.26
 requests==2.18.4
 six==1.11.0
-SQLAlchemy==1.2.5
 urllib3==1.22
 Werkzeug==0.14.1
 Whoosh==2.7.4
