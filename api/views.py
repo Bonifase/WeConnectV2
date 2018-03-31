@@ -149,6 +149,14 @@ def search_business(current_user):
 
     return jsonify(results)
 
+#filtering of businesses by category
+@app.route('/api/business/<category>/', methods = ['GET'])
+@token_required
+def business_category(current_user, category):
+    business_category = Business.query.filter_by(category=category).all()
+    for category in business_category:
+        return make_response(jsonify({"status": "ok", "message": "All Businesses", "Available Businesses": {'category':category.name}}), 200)
+
 #Update business
 @app.route('/api/v2/auth/business/<int:id>/', methods = ['PUT'])
 @token_required
