@@ -2,11 +2,16 @@ from app import app
 from models.models import *
 from flask import request,make_response, jsonify
 from flask_login import LoginManager, login_required, logout_user
-import json, jwt, datetime
-from functools import wraps	
+import json, jwt, datetime	
+import flask_whooshalchemy as wa
+from functools import wraps
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+
+wa.whoosh_index(app,Business)
 
 def token_required(f):
     @wraps(f)
@@ -135,6 +140,14 @@ def get_business(current_user, id):
         return  make_response(jsonify({"status": "ok", "message": "Available Business", "business":{'name':mybusiness.name, 'category':mybusiness.category, 'location':mybusiness.location, 'description':mybusiness.description}}), 200)
     else:
          return  make_response(jsonify({"status": "not found", "message": "No such Businesses",}), 404)
+
+#search business
+@app.route('/api/search', methods = ['GET'])
+@token_required
+def search_business(current_user):
+    results = Business.query.whoosh_search(request.args.get('query')).all()
+
+    return jsonify(results)
 
 #Update business
 @app.route('/api/v2/auth/business/<int:id>/', methods = ['PUT'])
