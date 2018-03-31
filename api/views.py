@@ -129,7 +129,7 @@ def view_businesses(current_user):
     mybusinesses = [{x.id : [x.name, x.category, x.location, x.description, 'Created on:'+ str(x.date_created) ] for x in businesses}]
     return make_response(jsonify({"status": "ok", "message": "All Businesses", "Available Businesses":mybusinesses}), 200)
 
-#Get all the businesses but one businesss per page(pagination)
+#Get all the businesses but one businesss per page(pagination implementation)
 @app.route('/api/api/businesses/<int:page_num>', methods = ['GET'])
 @token_required
 def view_businesses(current_user, page_num):
