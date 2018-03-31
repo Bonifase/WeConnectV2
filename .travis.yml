@@ -7,7 +7,7 @@ python:
 install:
   - pip install
   - pip install -r requirements.txt
-  - pip install Flask-Alchemy
+ 
 
 before_script:
   - psql -c 'create database test;' -U postgres
