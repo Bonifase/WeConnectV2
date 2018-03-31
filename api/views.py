@@ -1,7 +1,29 @@
 from app import app
 from models.models import *
 from flask import request,make_response, jsonify
+from flask_login import LoginManager, login_required, logout_user
 import json, jwt, datetime
+from functools import wraps	
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+        if not token:
+            return jsonify({'message':'Token is Missing!'}), 401
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'])
+            current_user = User.query.filter_by(id = data['id']).first()
+        except:
+            return jsonify({'message':'Token is Invalid!'}), 401
+        return f(current_user, *args, **kwargs)
+    return decorated
 
 
 #Endpoint to Register user and ssaving the details in a list called users
@@ -25,15 +47,17 @@ def register_user():
 #Login user
 @app.route('/api/v2/auth/login',  methods = ['POST'])
 def login():
+    #auth = request.authorization
     data = request.get_json()
-    username = data['username']
-    password = data['password']
     #check if the user details exist in the list, otherwise deny access.
-    users = User.query.all()
-    user = [x for x in users if x.username == username]
+    # if not auth or not auth.username or not auth.password:
+    #     return make_response(jsonify({"status": "Conflict", "message": "Login required"}), 409)
+
+    user = User.query.filter_by(username=data['username']).first()
     if user:
-        if password == user[0].password:
-            return make_response(jsonify({"status": "ok", "message": "Login Successful"}), 200)
+        if user.password == data['password']:
+            user_token = jwt.encode({'id':user.id, 'exp':datetime.datetime.utcnow() + datetime.timedelta(minutes=45)}, app.config['SECRET_KEY'])
+            return make_response(jsonify({"status": "ok", "user_token": user_token.decode()}), 200)
 
         else:
             return make_response(jsonify({"status": "Conflict", "message": "Wrong Password"}), 409)
@@ -43,15 +67,14 @@ def login():
    
 #Reset password
 @app.route('/api/v2/auth/reset-password', methods = ['POST'])
-def reset_password():
+@token_required
+def reset_password(current_user):
     data = request.get_json()
-    username = data['username']
-    password = data['password']
     resetpassword = data['resetpassword']
-    users = User.query.all()
-    user = [x for x in users if x.username == username]
-    if user and password == user[0].password:
-        user[0].password = resetpassword
+    user = current_user
+    if resetpassword != user.password:
+        user.password = resetpassword
+        db.session.add(user)
         db.session.commit()
         return make_response(jsonify({"status": "Created", "message": "Reset Successful"}), 201)
        
@@ -59,19 +82,14 @@ def reset_password():
         return make_response(jsonify({"status": "Conflict", "message": "Type Different Password"}), 409)
 #Logout User
 @app.route('/api/v2/auth/logout', methods = ['POST'])
-def logout():
-    data = request.get_json()
-    username = data['username']
-    password = data['password']
-    #check if the user details exist in the list, otherwise deny access.
-    users = User.query.all()
-    user = [x for x in users if x.username == username]
+@token_required
+def logout(current_user):
+    user = current_user
     if user:
-        if password == user[0].password:
-            return make_response(jsonify({"status": "ok", "message": "Logout Successful"}), 200)
-
-        else:
-            return make_response(jsonify({"status": "Conflict", "message": "Wrong Password"}), 409)
+        user.authenticated = False
+        db.session.commit()
+        logout_user()
+        return make_response(jsonify({"status": "ok", "message": "Logout Successful"}), 200)
 
     else:
         return make_response(jsonify({"status": "Conflict", "message": "Wrong Login Details"}), 409)
@@ -79,7 +97,8 @@ def logout():
 
 #Create new business
 @app.route('/api/v2/auth/businesses', methods = ['POST'])
-def create_business():
+@token_required
+def create_business(current_user):
     data = request.get_json()
     name = data["name"]
     category = data["category"]
@@ -92,20 +111,24 @@ def create_business():
         return make_response(jsonify({"status": "Conflict", "message": "Business already Exist, use another name"}), 409)
     else:
         business = Business(name, category, location, description)
-        businesses.append(business)
-        myresponse = {'name':business.name, 'category':business.category, 'location':business.location, 'description':business.description}
+        db.session.add(business)
+        db.session.commit()
+        myresponse = {'name':business.name, 'category':business.category, 'location':business.location, 'description':business.description, 'Date Created':business.date_created}
     return make_response(jsonify(myresponse), 201)
 
 #Get all the businesses
 @app.route('/api/v2/auth/businesses', methods = ['GET'])
-def view_businesses():
+@token_required
+def view_businesses(current_user):
     businesses = Business.query.all()
-    mybusinesses = [{x.id : [x.name, x.category, x.location] for x in businesses}]
-    return make_response(jsonify({"status": "ok", "message": "Available Businesses", "businesses":mybusinesses}), 200)
+    mybusinesses = [{x.id : [x.name, x.category, x.location, x.description, 'Created on:'+ str(x.date_created) ] for x in businesses}]
+    return make_response(jsonify({"status": "ok", "message": "All Businesses", "Available Businesses":mybusinesses}), 200)
 
 #Get a business by id
 @app.route('/api/v2/auth/business/<int:id>/')
-def get_business(id):
+@token_required
+def get_business(current_user, id):
+    businesses = Business.query.all()
     mybusiness = [x for x in businesses if x.id == id]
     if mybusiness:
         mybusiness = mybusiness[0]
@@ -115,33 +138,45 @@ def get_business(id):
 
 #Update business
 @app.route('/api/v2/auth/business/<int:id>/', methods = ['PUT'])
-def update_business(id):
+@token_required
+def update_business(current_user, id):
     data = request.get_json()
     newname = data["name"]
     newcategory = data["category"]
     newlocation = data["location"]
     newdescription = data["description"]
+    businesses = Business.query.all()
     mybusiness = [x for x in businesses if x.id == id]
     if mybusiness:
-        mybusiness[0].update_business(newname, newcategory, newlocation, newdescription)
+        mybusiness[0].name = newname
+        mybusiness[0].category = newcategory
+        mybusiness[0].location = newlocation
+        mybusiness[0].description = newdescription
+        db.session.commit()
         return  make_response(jsonify({"status": "Created", "message": "Business Updated",}), 201)
     else:
          return  make_response(jsonify({"status": "not found", "message": "No such Businesses",}), 404)
 
+
 #Delete business
 @app.route('/api/v2/auth/business/<int:id>/', methods = ['DELETE'])
-def delete_business(id):
-    mybusiness = [x for x in businesses if x.id == id]
-    if mybusiness:
-        mybusiness = mybusiness[0]
-        businesses.remove(mybusiness)
-        return  make_response(jsonify({"status": "Created", "message": "Business deleted",}), 201)
+@token_required
+def delete_business(current_user, id):
+    #mybusiness = [x for x in businesses if x.id == id]
+    business = Business.query.filter_by(id=id).first()
+    if business:
+        #mybusiness = mybusiness[0]
+        db.session.delete(business)
+        db.session.commit()
+        return  make_response(jsonify({"status": "Deleted", "message": "Business deleted",}), 201)
     else:
          return  make_response(jsonify({"status": "not found", "message": "No such Businesses",}), 404)
 
+
 #Add a review for a business
 @app.route('/api/v2/auth/<int:businessid>/reviews', methods = ['POST'])
-def reviews(businessid):
+@token_required
+def reviews(current_user, businessid):
     data = request.get_json()
     reviewbody = data["reviewbody"]
     businessid = data['businessid']
@@ -158,8 +193,8 @@ def reviews(businessid):
 
 #Get all reviews for a business
 @app.route('/api/v2/auth/<int:businessid>/reviews', methods = ['GET'])
-def myreviews(businessid):
+@token_required
+def myreviews(current_user, businessid):
     business_reviews = Review.query.all()
     myreviews = [{x.id : [x.businessid, x.reviewbody] for x in business_reviews}]
     return make_response(jsonify({"status": "ok", "message": "Available reviews", "Reviews":myreviews}), 200)
-
