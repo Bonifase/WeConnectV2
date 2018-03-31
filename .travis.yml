@@ -11,6 +11,6 @@ install:
 services:
   - postgresql
 before_script:
-  - psql -c 'create database travis_ci_test;' -U postgres
+  - psql -c 'create database weconnect;' -U postgres
 # command to run tests
 script: cd ./api && nosetests
