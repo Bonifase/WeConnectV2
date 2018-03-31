@@ -3,6 +3,7 @@ from models.models import *
 from flask import request,make_response, jsonify
 import json, jwt, datetime
 
+
 #Endpoint to Register user and ssaving the details in a list called users
 @app.route('/api/v2/auth/register',  methods = ['POST'])
 def register_user():
@@ -11,12 +12,14 @@ def register_user():
     email = data['email']
     password = data['password']
     #check if the user details already in the list, otherwise add the details in the list
+    users = User.query.all()
     available_emails = [x.email for x in users]
     if email in available_emails:
         return make_response(jsonify({"status": "Conflict", "message": "User Details Exist"}), 409)
     else:
         user = User(username, email, password)
-        users.append(user)
+        db.session.add(user)
+        db.session.commit()
     return make_response(jsonify({"status": "ok", "message": "Registered Successful"}), 201)
 
 #Login user
@@ -26,6 +29,7 @@ def login():
     username = data['username']
     password = data['password']
     #check if the user details exist in the list, otherwise deny access.
+    users = User.query.all()
     user = [x for x in users if x.username == username]
     if user:
         if password == user[0].password:
@@ -44,9 +48,11 @@ def reset_password():
     username = data['username']
     password = data['password']
     resetpassword = data['resetpassword']
+    users = User.query.all()
     user = [x for x in users if x.username == username]
     if user and password == user[0].password:
-        user[0].reset_password(resetpassword)
+        user[0].password = resetpassword
+        db.session.commit()
         return make_response(jsonify({"status": "Created", "message": "Reset Successful"}), 201)
        
     else:
@@ -58,6 +64,7 @@ def logout():
     username = data['username']
     password = data['password']
     #check if the user details exist in the list, otherwise deny access.
+    users = User.query.all()
     user = [x for x in users if x.username == username]
     if user:
         if password == user[0].password:
@@ -79,6 +86,7 @@ def create_business():
     location = data["location"]
     description = data["description"]
      #check if the business details already in the list, otherwise create the object in the list
+    businesses = Business.query.all()
     available_names = [x.name for x in businesses]
     if name in available_names:
         return make_response(jsonify({"status": "Conflict", "message": "Business already Exist, use another name"}), 409)
@@ -91,6 +99,7 @@ def create_business():
 #Get all the businesses
 @app.route('/api/v2/auth/businesses', methods = ['GET'])
 def view_businesses():
+    businesses = Business.query.all()
     mybusinesses = [{x.id : [x.name, x.category, x.location] for x in businesses}]
     return make_response(jsonify({"status": "ok", "message": "Available Businesses", "businesses":mybusinesses}), 200)
 
@@ -137,17 +146,20 @@ def reviews(businessid):
     reviewbody = data["reviewbody"]
     businessid = data['businessid']
      #check if the review details already in the list, otherwise create the review object in the list
+    business_reviews = Review.query.all()
     available_reviewbodies = [x.reviewbody for x in business_reviews ]
     if reviewbody in available_reviewbodies:
         return make_response(jsonify({"status": "Conflict", "message": "Review already Exist, use another description"}), 409)
     else:
         business_review = Review(reviewbody, businessid)
-        business_reviews.append(business_review)
+        db.session.add(business_review)
+        db.session.commit()
     return make_response(jsonify({"status": "CREATED", "message": "Review added Successfully"}), 201)
 
 #Get all reviews for a business
 @app.route('/api/v2/auth/<int:businessid>/reviews', methods = ['GET'])
 def myreviews(businessid):
+    business_reviews = Review.query.all()
     myreviews = [{x.id : [x.businessid, x.reviewbody] for x in business_reviews}]
     return make_response(jsonify({"status": "ok", "message": "Available reviews", "Reviews":myreviews}), 200)
 
