@@ -3,6 +3,8 @@ import app
 import unittest
 import tempfile
 import json
+from app import app, db
+from models.models import *
 from flask import jsonify
 
 class AppTestCase(unittest.TestCase):
@@ -13,6 +15,7 @@ class AppTestCase(unittest.TestCase):
         self.data = {"reviewbody":"This is my first best review", "businessid":1}
         self.data2 = {"reviewbody":"This is my second review", "businessid":2}
         self.data3 = {"username":"Bill", "email":"bill@gmail.com","password":"123456"}
+        db.create_all()
      
 
        
