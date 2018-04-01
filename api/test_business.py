@@ -10,8 +10,8 @@ from flask import jsonify
 class AppTestCase(unittest.TestCase):
 
     def setUp(self):
-        app.app.testing = True
-        self.app = app.app.test_client()
+        app.testing = True
+        self.app = app.test_client()
         self.data = { "name":"easyE", "category":"hardware", "location":"Mombasa", "description":"Selling hardware products" }
         self.data2 = { "name":"Dlink", "category":"software", "location":"Nairobi", "description":"Selling software products"}
         self.data3 = { "name":"Ecosoft", "category":"software", "location":"Nakuru", "description":"Selling software products"}
