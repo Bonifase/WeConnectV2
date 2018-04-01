@@ -150,7 +150,7 @@ def get_business(current_user, id):
          return  make_response(jsonify({"status": "not found", "message": "No such Businesses",}), 404)
 
 #search business
-@app.route('/api/search', methods = ['GET'])
+@app.route('/api/v2/auth/search', methods = ['GET'])
 @token_required
 def search_business(current_user):
     results = Business.query.whoosh_search(request.args.get('query')).all()

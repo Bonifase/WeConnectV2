@@ -14,7 +14,7 @@ class AppTestCase(unittest.TestCase):
         self.app = app.test_client()
         self.data = {"reviewbody":"This is my first best review", "businessid":1}
         self.data2 = {"reviewbody":"This is my second review", "businessid":2}
-        self.data3 = {"username":"Bill", "email":"bill@gmail.com","password":"123456"}
+        self.data3 = {"username":"john", "email":"email@gmail.com","password":"boni"}
         db.create_all()
      
 

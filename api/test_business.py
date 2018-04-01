@@ -15,7 +15,7 @@ class AppTestCase(unittest.TestCase):
         self.data = { "name":"easyE", "category":"hardware", "location":"Mombasa", "description":"Selling hardware products" }
         self.data2 = { "name":"Dlink", "category":"software", "location":"Nairobi", "description":"Selling software products"}
         self.data3 = { "name":"Ecosoft", "category":"software", "location":"Nakuru", "description":"Selling software products"}
-        self.data4 = {"username":"Bill", "email":"bill@gmail.com","password":"123456"}
+        self.data4 = {"username":"john", "email":"email@gmail.com","password":"boni"}
         db.create_all()
         
 

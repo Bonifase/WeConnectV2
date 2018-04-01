@@ -15,7 +15,7 @@ class AppTestCase(unittest.TestCase):
         self.data = {"username":"john", "email":"email@gmail.com","password":"boni"}
         self.data2 = {"username":"Bill", "email":"bill@gmail.com","password":"123456"}
         self.data3 = {"username":"Bills", "email":"bills@gmail.com","password":"1234567"}
-        self.data4 = {"username":"james", "email":"jamess@gmail.com", "password":"james12"}
+        self.data4 = {"username":"james", "email":"jamess@gmail.com", "password":"james1234"}
         self.data5 = {"username":"james", "password":"123456789", "resetpassword":"james123"}
         self.data6 = {"username":"james", "email":"jamess@gmail.com", "password":"james123"}
         db.create_all()
@@ -51,6 +51,10 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 409)
 
     def test_reset_password(self):
+        response = self.app.post('/api/v2/auth/register', data = json.dumps(self.data4) , content_type = 'application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result["message"], "User Details Exist")
+        self.assertEqual(response.status_code, 409)
         response = self.app.post('/api/v2/auth/login', data = json.dumps(self.data4), content_type = 'application/json')
         result = json.loads(response.data.decode())
         user_token = result['user_token']
