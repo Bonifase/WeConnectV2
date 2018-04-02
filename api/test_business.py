@@ -1,7 +1,6 @@
 # import os
 import app
 import unittest
-import tempfile
 import json
 from app import app, db
 from models.models import * 
