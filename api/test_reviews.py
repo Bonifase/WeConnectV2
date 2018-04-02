@@ -18,23 +18,23 @@ class AppTestCase(unittest.TestCase):
         
 
     def test_reviews(self):
-        response = self.app.post('/api/1/reviews', data = json.dumps(self.data) , content_type = 'application/json')
+        response = self.app.post('/api/v1/auth/1/reviews', data = json.dumps(self.data) , content_type = 'application/json')
         result = json.loads(response.data.decode())
-        self.assertEqual(result["message"], "Token is Missing!")
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(result["message"], "Review added Successfully")
+        self.assertEqual(response.status_code, 201)
 
     def test_duplicate_reviews(self):
-        response1 = self.app.post('/api/2/reviews', data = json.dumps(self.data2) , content_type = 'application/json')
+        response1 = self.app.post('/api/v1/auth/2/reviews', data = json.dumps(self.data2) , content_type = 'application/json')
         result1 = json.loads(response1.data.decode())
-        self.assertEqual(result1["message"], "Token is Missing!")
-        self.assertEqual(response1.status_code, 401)
-        response2 = self.app.post('/api/2/reviews', data = json.dumps(self.data2) , content_type = 'application/json')
+        self.assertEqual(result1["message"], "Review added Successfully")
+        self.assertEqual(response1.status_code, 201)
+        response2 = self.app.post('/api/v1/auth/2/reviews', data = json.dumps(self.data2) , content_type = 'application/json')
         result2 = json.loads(response2.data.decode())
-        self.assertEqual(result2["message"], "Token is Missing!")
-        self.assertEqual(response2.status_code, 401)
+        self.assertEqual(result2["message"], "Review already Exist, use another description")
+        self.assertEqual(response2.status_code, 409)
     
     def test_myreviews(self):
-        response = self.app.get('/api/1/reviews', data = json.dumps(self.data), content_type = 'application/json')
+        response = self.app.get('/api/v1/auth/1/reviews', data = json.dumps(self.data), content_type = 'application/json')
         result = json.loads(response.data.decode())
-        self.assertEqual(result["message"], "Token is Missing!")
-        self.assertEqual(response.status_code, 401) 
+        self.assertEqual(result["message"], "Available reviews")
+        self.assertEqual(response.status_code, 200) 
