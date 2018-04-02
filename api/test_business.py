@@ -15,11 +15,12 @@ class AppTestCase(unittest.TestCase):
         self.data = { "name":"easyE", "category":"hardware", "location":"Mombasa", "description":"Selling hardware products" }
         self.data2 = { "name":"Dlink", "category":"software", "location":"Nairobi", "description":"Selling software products"}
         self.data3 = { "name":"Ecosoft", "category":"software", "location":"Nakuru", "description":"Selling software products"}
-        self.data4 = {"username":"john", "email":"email@gmail.com","password":"boni"}
+        self.data4 = {"username":"test", "email":"test@gmail.com","password":"test123"}
         db.create_all()
         
 
     def test_create_business(self):
+        response = self.app.post('/api/v2/auth/register', data = json.dumps(self.data4) , content_type = 'application/json')
         response = self.app.post('/api/v2/auth/login', data = json.dumps(self.data4), content_type = 'application/json')
         result = json.loads(response.data.decode())
         user_token = result['user_token']
