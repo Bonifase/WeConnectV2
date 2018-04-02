@@ -125,13 +125,12 @@ def create_business(current_user):
         myresponse = {'name':business.name, 'category':business.category, 'location':business.location, 'description':business.description, 'Date Created':business.date_created}
     return make_response(jsonify(myresponse), 201)
 
-#Get all the businesses but one businesss per page
-@app.route('/api/api/businesses/<int:page_num>', methods = ['GET'])
+#Get all the businesses
+@app.route('/api/api/businesses', methods = ['GET'])
 @token_required
-def view_businesses(current_user, page_num):
-    mybusinesses = Business.query.paginate(per_page=1, page=page_num, error_out=True)
-    for business in mybusinesses.items:
-        return make_response(jsonify({'name':business.name, 'category':business.category, 'location':business.location, 'description':business.description}), 200)
+def view_businesses(current_user):
+    mybusinesses = [{x.id : [x.name, x.category, x.location, x.description, 'Created on:'+ str(x.date_created) ] for x in businesses}]
+    return make_response(jsonify({"status": "ok", "message": "All Businesses", "Available Businesses":mybusinesses}), 200)
 
 #Get a business by id
 @app.route('/api/business/<int:id>/', methods = ['GET'])
