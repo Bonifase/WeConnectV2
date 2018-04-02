@@ -3,15 +3,12 @@ from models.models import *
 from flask import request,make_response, jsonify
 from flask_login import LoginManager, login_required, logout_user
 import json, jwt, datetime	
-import flask_whooshalchemy as wa
 from functools import wraps
 
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-
-wa.whoosh_index(app,Business)
 
 def token_required(f):
     @wraps(f)
@@ -200,7 +197,10 @@ def delete_business(current_user, id):
 def reviews(current_user, businessid):
     data = request.get_json()
     reviewbody = data["reviewbody"]
-    businessid = data['businessid']
+    businesses = Business.query.all()
+    for ids in businesses:
+        businessid = ids.id
+        print('___________________BUSINESS ID', businessid)
      #check if the review details already in the list, otherwise create the review object in the list
     business_reviews = Review.query.all()
     available_reviewbodies = [x.reviewbody for x in business_reviews ]
