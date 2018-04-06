@@ -62,7 +62,7 @@ li.sr-only a, li a:hover {
 
 }
 #showcase{
-    background: url(..Designs/UI/images/showcase.jpg) no-repeat center center;
+    background: url(../images/showcase.jpg) no-repeat center center;
     border-bottom: 1px solid #73c9e6;
     margin-bottom: 30px;
 }
