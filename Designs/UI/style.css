@@ -9,6 +9,27 @@ body{
     border-radius: 5px;
    
 }
+#subheader{
+    background:  #333;
+    border-bottom: 1px solid #73c9e6;
+    margin-bottom: 30px;
+}
+#subheader .row{
+    height: 150px;
+}
+#subheader h2{
+    font-size: 20px;
+    margin: 0;
+    padding-bottom: 20px;
+}
+#subheader .subheader-content{
+    background: #333;
+    color: #fff;
+    border-radius: 0px;
+    padding: 40px;
+    width:400px;
+    margin : auto;
+}
 /*nav-tabs*/
 .nav-tabs{
     margin-left: auto;

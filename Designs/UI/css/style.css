@@ -6,9 +6,39 @@ body{
     margin: 0;
     padding: 0;
 }
+.container{
+    width: 79%;
+    margin: auto;
+    margin-top: 0;
+    background: #d5eaeb;
+    border-radius: 5px;
+}
 
 img{
     width: 100%;
+}
+#subheader{
+    background:  #333;
+    border-bottom: 1px solid #73c9e6;
+    opacity: 0.9;
+    padding: auto;
+   
+}
+#subheader .row{
+    height: 50px;
+}
+#subheader h2{
+    font-size: 20px;
+    margin: 0;
+    padding-bottom: 0px;
+    float: left;
+}
+#subheader .subheader-content{
+    background: #333;
+    color: #fff; 
+    margin: auto;
+   
+    
 }
 /*container*/
 .container{
@@ -121,3 +151,16 @@ li.sr-only a, li a:hover {
     background-color: #73c9e6;
     border-radius: 10px;
   }
+
+#main-footer{
+    background: #333;
+    color: #fff;
+    width:100%;
+    margin : auto;
+}
+#main-footer .footer-content{
+    background: #333;
+    color: #fff; 
+    margin: auto;
+    text-align: center;
+}
