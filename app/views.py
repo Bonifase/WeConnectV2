@@ -1,12 +1,14 @@
-from flask import Flask, request, jsonify, make_response, session
+from flask import request, jsonify, make_response, session, logging
 import json 
+from flask_login import LoginManager
 
-from models.user import User
-from models.business import Business
-from models.review import Review
+from app import app
+
+from .models import User
+from .models import Business
+from .models import Review
 
 
-app = Flask(__name__)
 
 business_reviews = []
 
@@ -41,6 +43,7 @@ def login():
     user = [x for x in User.users if x.username == username]
     if user:
         if password == user[0].password:
+            session['logged_in'] = True
             session['username'] = username
             return make_response(jsonify({"message": "Login Successful"}), 200)
 
@@ -178,8 +181,3 @@ def myreviews(businessid):
         return make_response(jsonify({"Reviews":myreviews}), 200)
 
 
-
-
-if __name__ == '__main__':
-
-    app.run(debug=True)

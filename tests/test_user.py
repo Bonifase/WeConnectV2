@@ -1,5 +1,5 @@
 import os
-from app.app import app
+from app import app
 import unittest
 import tempfile
 import json
@@ -8,8 +8,8 @@ from flask import jsonify
 class AppTestCase(unittest.TestCase):
 
     def setUp(self):
-        app.app.testing = True
-        self.app = app.app.test_client()
+        app.testing = True
+        self.app = app.test_client()
         self.data = {"username":"john", "email":"email@gmail.com","password":"12345"}
         self.data2 = {"username":"Bill", "email":"bill@gmail.com","password":"12345"}
         self.data3 = {"username":"Bills", "email":"bills@gmail.com","password":"1234567"}
