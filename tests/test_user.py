@@ -1,5 +1,5 @@
 import os
-import app
+from app import app
 import unittest
 import tempfile
 import json
@@ -8,14 +8,15 @@ from flask import jsonify
 class AppTestCase(unittest.TestCase):
 
     def setUp(self):
-        app.app.testing = True
-        self.app = app.app.test_client()
+        app.testing = True
+        self.app = app.test_client()
         self.data = {"username":"john", "email":"email@gmail.com","password":"12345"}
         self.data2 = {"username":"Bill", "email":"bill@gmail.com","password":"12345"}
         self.data3 = {"username":"Bills", "email":"bills@gmail.com","password":"1234567"}
         self.data4 = {"username":"james", "email":"jamess@gmail.com", "password":"12345678"}
-        self.data5 = {"username":"james", "password":"12345678", "resetpassword":"123456789"}
+        self.data5 = {"username":"james", "password":"12345678", "newpassword":"123456789"}
         self.data6 = {"username":"james", "email":"jamess@gmail.com", "password":"123456789"}
+        self.data7 = {"username":"", "password":"123456789"}
 
        
         
@@ -41,6 +42,15 @@ class AppTestCase(unittest.TestCase):
         result = json.loads(response.data.decode())
         self.assertEqual(result["message"], "Login Successful")
         self.assertEqual(response.status_code, 200)
+
+    def test_empty_login(self):
+        # response = self.app.post('/api/v1/auth/register', data = json.dumps(self.data2) , content_type = 'application/json')
+        # result = json.loads(response.data.decode())
+        response = self.app.post('/api/v1/auth/login', data = json.dumps(self.data7), content_type = 'application/json')
+        result = json.loads(response.data.decode())
+        self.assertTrue(result["message"], "Incomplete entry")
+        self.assertEqual(response.status_code, 401)
+
     def test_unregistered_user(self):
         response = self.app.post('/api/v1/auth/login', data = json.dumps(self.data3) , content_type = 'application/json')
         result = json.loads(response.data.decode())
