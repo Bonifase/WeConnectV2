@@ -1,4 +1,6 @@
 class Review:
+    business_reviews = []
+    
     class_counter= 1
     def __init__(self, reviewbody, businessid):
         self.reviewbody = reviewbody

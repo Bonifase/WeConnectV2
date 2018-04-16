@@ -1,5 +1,5 @@
 import os
-import app
+from app.app import app
 import unittest
 import tempfile
 import json
@@ -12,7 +12,7 @@ class AppTestCase(unittest.TestCase):
         self.app = app.app.test_client()
         self.data = {"reviewbody":"This is my first review", "businessid":1}
         self.data2 = {"reviewbody":"This is my second review", "businessid":2}
-     
+        
 
        
         
