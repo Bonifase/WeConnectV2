@@ -16,7 +16,7 @@ class AppTestCase(unittest.TestCase):
         self.data = {"username":"john", "email":"email@gmail.com","password":"&._12345"}
         self.data2 = {"username":"Bill", "email":"bill@gmail.com","password":"&._12345k"}
         self.data3 = {"username":"Bills", "email":"bills@gmail.com","password":"1234567"}
-        self.data4 = {"username":"james", "email":"jamess@gmail.com", "password":"12345678"}
+        self.data4 = {"":"james", "email":"jamess@gmail.com", "password":"12345678"}
         self.data5 = {"username":"john","password":"&._12345", "newpassword":"123456789"}
         self.data6 = {"username":"john", "password":"123456789"}
         self.data7 = {"username":"", "password":"123456789"}
@@ -27,7 +27,11 @@ class AppTestCase(unittest.TestCase):
         User.users.clear()
         
        
-        
+    def test_missing_username(self):
+        response = self.app.post('/api/v1/auth/register', data = json.dumps(self.data4) , content_type = 'application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result["message"], "Missing key")
+        self.assertEqual(response.status_code, 409)    
 
     def test_register_user(self):
         response = self.app.post('/api/v1/auth/register', data = json.dumps(self.data2) , content_type = 'application/json')
@@ -60,6 +64,8 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 409)
 
     def test_reset_password(self):
+        self.app.post('/api/v1/auth/register', data = json.dumps(self.data) , content_type = 'application/json')
+        self.app.post('/api/v1/auth/login', data = json.dumps(self.data) , content_type = 'application/json')
         response1 = self.app.post('/api/v1/auth/reset-password', data = json.dumps(self.data5) , content_type = 'application/json')
         result1 = json.loads(response1.data.decode())
         self.assertEqual(result1["message"], "Reset Successful")
