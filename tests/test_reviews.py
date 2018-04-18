@@ -36,5 +36,5 @@ class AppTestCase(unittest.TestCase):
     def test_myreviews(self):
         response = self.app.get('/api/v1/auth/1/reviews', data = json.dumps(self.data), content_type = 'application/json')
         result = json.loads(response.data.decode())
-        self.assertEqual(result["message"], "Available reviews")
+        self.assertIn(self.data2["reviewbody"], result['Reviews'][0]['1'][1])
         self.assertEqual(response.status_code, 200) 

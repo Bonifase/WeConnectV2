@@ -29,7 +29,7 @@ def register_user():
         except AssertionError as err:
             return jsonify({'error': err.args[0]})
 
-    return make_response(jsonify({ "message": user.username}), 201)
+    return make_response(jsonify({ "message": "Registration Successful"}), 201)
 
 #Login user
 @app.route('/api/v1/auth/login',  methods = ['POST'])
@@ -100,6 +100,7 @@ def create_business():
      #check if the business details already in the list, otherwise create the object in the list
     available_names = [x.name for x in Business.businesses]
     if name in available_names:
+        Business.class_counter -= 1
         return make_response(jsonify({"error": "Business already Exist, use another name"}), 409)
 
     else:
@@ -120,7 +121,7 @@ def view_businesses():
         return make_response(jsonify({"businesses":mybusinesses}), 200)
 
 #Get a business by id
-@app.route('/api/v1/auth/business/<int:id>/')
+@app.route('/api/v1/auth/business/<int:id>/', methods = ['GET'])
 def get_business(id):
     mybusiness = [x for x in Business.businesses if x.id == id]
     if mybusiness:
