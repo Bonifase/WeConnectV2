@@ -1,6 +1,7 @@
 from flask import request, jsonify, make_response, session, logging
 import json 
 from flask_login import LoginManager
+from functools import wraps
 
 from app import app
 
@@ -16,9 +17,11 @@ business_reviews = []
 @app.route('/api/v1/auth/register',  methods = ['POST'])
 def register_user():
     data = request.get_json()
-    username = data['username']
-    email = data['email']
-    password = data['password']
+    username = data.get('username')
+    email = data.get('email')
+    password = data.get('password')
+    if username is None:
+        return make_response(jsonify({"message": "Missing key"}), 409)
     #check if the user details already in the list, otherwise add the details in the list
     available_emails = [x.email for x in User.users]
     if email in available_emails:
@@ -35,8 +38,8 @@ def register_user():
 @app.route('/api/v1/auth/login',  methods = ['POST'])
 def login():
     data = request.get_json()
-    username = data['username']
-    password = data['password']
+    username = data.get('username')
+    password = data.get('password')
     #check if the user details exist in the list, otherwise deny access.
     if data['username'] == "" or data['password'] == "":
         return make_response(jsonify({"message": "Incomplete entry"}), 401)
@@ -52,14 +55,25 @@ def login():
 
     else:
         return make_response(jsonify({"message": "Wrong Login Details"}), 409)
+
+#check  if user is logged in
+def is_logged_in(f):
+     @wraps(f)
+     def wrap(*args, **kwargs):
+         if 'logged_in' in session:
+             return f(*args, **kwargs)
+         else:
+             return make_response(jsonify({"Unauthorised": "Please login"}), 401)
+     return wrap
    
 #Reset password
 @app.route('/api/v1/auth/reset-password', methods = ['POST'])
+@is_logged_in
 def reset_password():
     data = request.get_json()
-    username = data['username']
-    password = data['password']
-    newpassword = data['newpassword']
+    username = data.get('username')
+    password = data.get('password')
+    newpassword = data.get('newpassword')
     user = [x for x in User.users if x.username == username]
     if user and password != user[0].password:
         return make_response(jsonify({"message": "Enter your Current Password"}), 409)
@@ -72,14 +86,16 @@ def reset_password():
         
 #Logout User
 @app.route('/api/v1/auth/logout', methods = ['POST'])
+@is_logged_in
 def logout():
     data = request.get_json()
-    username = data['username']
-    password = data['password']
+    username = data.get('username')
+    password = data.get('password')
     #check if the user details exist in the list, otherwise deny access.
     user = [x for x in User.users if x.username == username]
     if user:
         if password == user[0].password:
+            session.clear()
             return make_response(jsonify({"message": "Logout Successful"}), 200)
 
         else:
@@ -91,6 +107,7 @@ def logout():
 
 #Create new business
 @app.route('/api/v1/auth/businesses', methods = ['POST'])
+@is_logged_in
 def create_business():
     data = request.get_json()
     name = data["name"]
@@ -113,6 +130,7 @@ def create_business():
 
 #Get all the businesses
 @app.route('/api/v1/auth/businesses', methods = ['GET'])
+@is_logged_in
 def view_businesses():
     mybusinesses = [{x.id : [x.name, x.category, x.location] for x in Business.businesses}]
     if mybusinesses == [{}]:
@@ -122,6 +140,7 @@ def view_businesses():
 
 #Get a business by id
 @app.route('/api/v1/auth/business/<int:id>/', methods = ['GET'])
+@is_logged_in
 def get_business(id):
     mybusiness = [x for x in Business.businesses if x.id == id]
     if mybusiness:
@@ -133,6 +152,7 @@ def get_business(id):
 
 #Update business
 @app.route('/api/v1/auth/business/<int:id>', methods = ['PUT'])
+@is_logged_in
 def update_business(id):
     data = request.get_json()
     newname = data["name"]
@@ -148,6 +168,7 @@ def update_business(id):
 
 #Delete business
 @app.route('/api/v1/auth/business/<int:id>/', methods = ['DELETE'])
+@is_logged_in
 def delete_business(id):
     mybusiness = [x for x in Business.businesses if x.id == id]
     if mybusiness:
@@ -159,6 +180,7 @@ def delete_business(id):
 
 #Add a review for a business
 @app.route('/api/v1/auth/<int:businessid>/reviews', methods = ['POST'])
+@is_logged_in
 def reviews(businessid):
     data = request.get_json()
     reviewbody = data["reviewbody"]
@@ -174,6 +196,7 @@ def reviews(businessid):
 
 #Get all reviews for a business
 @app.route('/api/v1/auth/<int:businessid>/reviews', methods = ['GET'])
+@is_logged_in
 def myreviews(businessid):
     myreviews = [{x.id : [x.businessid, x.reviewbody] for x in business_reviews}]
     if myreviews == [{}]:
