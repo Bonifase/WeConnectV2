@@ -82,6 +82,15 @@ class AppTestCase(unittest.TestCase):
         self.assertEqual(result["message"], "Login Successful")
         self.assertEqual(response.status_code, 200)
 
+    def test_wrong_password(self):
+        self.app.post(
+            '/api/v1/auth/register', data=json.dumps(self.data), content_type='application/json')
+        response = self.app.post(
+            '/api/v1/auth/login', data=json.dumps(self.data9), content_type='application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result["message"], "Wrong Password")
+        self.assertEqual(response.status_code, 409)
+
     def test_empty_login(self):
         response = self.app.post(
             '/api/v1/auth/login', data=json.dumps(self.data7), content_type='application/json')
