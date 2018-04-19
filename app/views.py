@@ -1,5 +1,5 @@
 from flask import request, jsonify, make_response, session, logging
-import json 
+import json
 from flask_login import LoginManager
 from functools import wraps
 
@@ -10,11 +10,12 @@ from .models import Business
 from .models import Review
 
 
-
 business_reviews = []
 
-#Endpoint to Register user and ssaving the details in a list called users
-@app.route('/api/v1/auth/register',  methods = ['POST'])
+# Endpoint to Register user and ssaving the details in a list called users
+
+
+@app.route('/api/v1/auth/register',  methods=['POST'])
 def register_user():
     data = request.get_json()
     username = data.get('username')
@@ -22,7 +23,7 @@ def register_user():
     password = data.get('password')
     if username is None:
         return make_response(jsonify({"message": "Missing key"}), 409)
-    #check if the user details already in the list, otherwise add the details in the list
+    # check if the user details already in the list, otherwise add the details in the list
     available_emails = [x.email for x in User.users]
     if email in available_emails:
         return make_response(jsonify({"message": "User Details Exist"}), 409)
@@ -30,17 +31,19 @@ def register_user():
         try:
             user = User.register_user(username, email, password)
         except AssertionError as err:
-            return jsonify({'error': err.args[0]})
+            return make_response(jsonify({'error': err.args[0]}), 409)
 
-    return make_response(jsonify({ "message": "Registration Successful"}), 201)
+    return make_response(jsonify({"message": "Registration Successful"}), 201)
 
-#Login user
-@app.route('/api/v1/auth/login',  methods = ['POST'])
+# Login user
+
+
+@app.route('/api/v1/auth/login',  methods=['POST'])
 def login():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
-    #check if the user details exist in the list, otherwise deny access.
+    # check if the user details exist in the list, otherwise deny access.
     if data['username'] == "" or data['password'] == "":
         return make_response(jsonify({"message": "Incomplete entry"}), 401)
     user = [x for x in User.users if x.username == username]
@@ -56,18 +59,22 @@ def login():
     else:
         return make_response(jsonify({"message": "Wrong Login Details"}), 409)
 
-#check  if user is logged in
+# check  if user is logged in
+
+
 def is_logged_in(f):
-     @wraps(f)
-     def wrap(*args, **kwargs):
-         if 'logged_in' in session:
-             return f(*args, **kwargs)
-         else:
-             return make_response(jsonify({"Unauthorised": "Please login"}), 401)
-     return wrap
-   
-#Reset password
-@app.route('/api/v1/auth/reset-password', methods = ['POST'])
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            return make_response(jsonify({"Unauthorised": "Please login first"}), 401)
+    return wrap
+
+# Reset password
+
+
+@app.route('/api/v1/auth/reset-password', methods=['POST'])
 @is_logged_in
 def reset_password():
     data = request.get_json()
@@ -79,19 +86,21 @@ def reset_password():
         return make_response(jsonify({"message": "Enter your Current Password"}), 409)
     elif newpassword == user[0].password:
         return make_response(jsonify({"message": "Use a Different New Password"}), 409)
-       
+
     else:
         user[0].reset_password(newpassword)
         return make_response(jsonify({"message": "Reset Successful"}), 201)
-        
-#Logout User
-@app.route('/api/v1/auth/logout', methods = ['POST'])
+
+# Logout User
+
+
+@app.route('/api/v1/auth/logout', methods=['POST'])
 @is_logged_in
 def logout():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
-    #check if the user details exist in the list, otherwise deny access.
+    # check if the user details exist in the list, otherwise deny access.
     user = [x for x in User.users if x.username == username]
     if user:
         if password == user[0].password:
@@ -99,14 +108,14 @@ def logout():
             return make_response(jsonify({"message": "Logout Successful"}), 200)
 
         else:
-            return make_response(jsonify({ "message": "Wrong Password"}), 409)
+            return make_response(jsonify({"message": "Wrong Password"}), 409)
 
     else:
-        return make_response(jsonify({ "message": "Wrong Login Details"}), 409)
+        return make_response(jsonify({"message": "Wrong Login Details"}), 409)
 
 
-#Create new business
-@app.route('/api/v1/auth/businesses', methods = ['POST'])
+# Create new business
+@app.route('/api/v1/auth/businesses', methods=['POST'])
 @is_logged_in
 def create_business():
     data = request.get_json()
@@ -114,44 +123,53 @@ def create_business():
     category = data["category"]
     location = data["location"]
     description = data["description"]
-     #check if the business details already in the list, otherwise create the object in the list
+    # check if the business details already in the list, otherwise create the object in the list
     available_names = [x.name for x in Business.businesses]
     if name in available_names:
-        Business.class_counter -= 1
         return make_response(jsonify({"error": "Business already Exist, use another name"}), 409)
 
     else:
         try:
-            business = Business.register_business(name, category, location, description)
+            business = Business.register_business(
+                name, category, location, description)
         except AssertionError as err:
             return jsonify({'error': err.args[0]})
-        myresponse = {'name':business.name, 'category':business.category, 'location':business.location, 'description':business.description}
+        myresponse = {'name': business.name, 'category': business.category,
+                      'location': business.location, 'description': business.description}
     return make_response(jsonify(myresponse), 201)
 
-#Get all the businesses
-@app.route('/api/v1/auth/businesses', methods = ['GET'])
+# Get all the businesses
+
+
+@app.route('/api/v1/auth/businesses', methods=['GET'])
 @is_logged_in
 def view_businesses():
-    mybusinesses = [{x.id : [x.name, x.category, x.location] for x in Business.businesses}]
+    mybusinesses = [{x.id: [x.name, x.category, x.location]
+                     for x in Business.businesses}]
     if mybusinesses == [{}]:
-        return make_response(jsonify({"businesses":"No Business Entry"}), 404)
+        return make_response(jsonify({"businesses": "No Business Entry"}), 404)
     else:
-        return make_response(jsonify({"businesses":mybusinesses}), 200)
+        return make_response(jsonify({"businesses": mybusinesses}), 200)
 
-#Get a business by id
-@app.route('/api/v1/auth/business/<int:id>/', methods = ['GET'])
+# Get a business by id
+
+
+@app.route('/api/v1/auth/business/<int:id>/', methods=['GET'])
 @is_logged_in
 def get_business(id):
     mybusiness = [x for x in Business.businesses if x.id == id]
     if mybusiness:
         mybusiness = mybusiness[0]
-        return  make_response(jsonify({"business":{'name':mybusiness.name,
-         'category':mybusiness.category, 'location':mybusiness.location, 'description':mybusiness.description}}), 200)
+        return make_response(jsonify({"business": {'name': mybusiness.name,
+        'category': mybusiness.category, 'location': mybusiness.location, 
+        'description': mybusiness.description}}), 200)
     else:
-         return  make_response(jsonify({"message": "Business not available",}), 404)
+        return make_response(jsonify({"message": "Business not available", }), 404)
 
-#Update business
-@app.route('/api/v1/auth/business/<int:id>', methods = ['PUT'])
+# Update business
+
+
+@app.route('/api/v1/auth/business/<int:id>', methods=['PUT'])
 @is_logged_in
 def update_business(id):
     data = request.get_json()
@@ -161,47 +179,56 @@ def update_business(id):
     newdescription = data["description"]
     mybusiness = [x for x in Business.businesses if x.id == id]
     if mybusiness:
-        mybusiness[0].update_business(newname, newcategory, newlocation, newdescription)
-        return  make_response(jsonify({ "message": "Business Updated",}), 201)
+        mybusiness[0].update_business(
+            newname, newcategory, newlocation, newdescription)
+        return make_response(jsonify({"message": "Business Updated", }), 201)
     else:
-         return  make_response(jsonify({"message": "Businesses not available",}), 404)
+        return make_response(jsonify({"message": "Businesses not available", }), 404)
 
-#Delete business
-@app.route('/api/v1/auth/business/<int:id>/', methods = ['DELETE'])
+# Delete business
+
+
+@app.route('/api/v1/auth/business/<int:id>/', methods=['DELETE'])
 @is_logged_in
 def delete_business(id):
     mybusiness = [x for x in Business.businesses if x.id == id]
     if mybusiness:
         mybusiness = mybusiness[0]
         Business.businesses.remove(mybusiness)
-        return  make_response(jsonify({ "message": "Business deleted",}), 200)
+        return make_response(jsonify({"message": "Business deleted", }), 200)
     else:
-         return  make_response(jsonify({"message": "No such Businesses",}), 404)
+        return make_response(jsonify({"message": "No such Businesses", }), 404)
 
-#Add a review for a business
-@app.route('/api/v1/auth/<int:businessid>/reviews', methods = ['POST'])
+# Add a review for a business
+
+
+@app.route('/api/v1/auth/<int:businessid>/reviews', methods=['POST'])
 @is_logged_in
 def reviews(businessid):
     data = request.get_json()
-    reviewbody = data["reviewbody"]
-    businessid = data['businessid']
-     #check if the review details already in the list, otherwise create the review object in the list
-    available_reviewbodies = [x.reviewbody for x in business_reviews ]
-    if reviewbody in available_reviewbodies:
-        return make_response(jsonify({ "message": "Review already Exist, use another description"}), 409)
-    else:
+    reviewbody = data["description"]
+    # check if the review details already in the list, otherwise create the review object in the list
+    mybusiness = [
+        business for business in Business.businesses if business.id == businessid]
+    if mybusiness:
         business_review = Review(reviewbody, businessid)
         business_reviews.append(business_review)
-    return make_response(jsonify({"message": "Review added Successfully"}), 201)
+        return make_response(jsonify({"message": "Review added Successfully"}), 201)
+    else:
+        return make_response(jsonify({"message": "Business with that ID does not exist"}), 409)
 
-#Get all reviews for a business
-@app.route('/api/v1/auth/<int:businessid>/reviews', methods = ['GET'])
+
+# Get all reviews for a business
+@app.route('/api/v1/auth/<int:businessid>/reviews', methods=['GET'])
 @is_logged_in
 def myreviews(businessid):
-    myreviews = [{x.id : [x.businessid, x.reviewbody] for x in business_reviews}]
-    if myreviews == [{}]:
+    myreviews = [review for review in business_reviews if review.businessid == businessid]
+
+    review_info = {}
+    for a_review in myreviews:
+        review_info['businessid'] = a_review.businessid
+        review_info['description'] = a_review.reviewbody
+    if review_info == {}:
         return make_response(jsonify({"message": "No Reviews available"}), 404)
     else:
-        return make_response(jsonify({"Reviews":myreviews}), 200)
-
-
+        return make_response(jsonify({"Reviews": review_info}), 200)

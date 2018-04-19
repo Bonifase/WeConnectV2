@@ -22,6 +22,13 @@ class AppTestCase(unittest.TestCase):
         del Business.businesses[:]
         
 
+    def test_unlogged_in_users(self):
+        self.app.post('/api/v1/auth/register', data = json.dumps(self.data6) , content_type = 'application/json')
+        response = self.app.post('/api/v1/auth/businesses', data = json.dumps(self.data), content_type = 'application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result["Unauthorised"], "Please login first")
+        self.assertEqual(response.status_code, 401)
+
     def test_create_business(self):
         self.app.post('/api/v1/auth/register', data = json.dumps(self.data6) , content_type = 'application/json')
         self.app.post('/api/v1/auth/login', data = json.dumps(self.data6) , content_type = 'application/json')
