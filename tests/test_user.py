@@ -34,6 +34,8 @@ class AppTestCase(unittest.TestCase):
                        "password": "&._12345", "newpassword": "&._12345"}
         self.data11 = {"username": "user",
                        "email": "user@gmail.com", "password": "45"}
+        self.data12 = {"username": "john",
+                     "email": "email@gmail.com", "password": "._12345"}
 
         # Default user
         self.app.post('/api/v1/auth/register',
@@ -82,7 +84,7 @@ class AppTestCase(unittest.TestCase):
         response2 = self.app.post(
             '/api/v1/auth/register', data=json.dumps(self.data), content_type='application/json')
         result2 = json.loads(response2.data.decode())
-        self.assertEqual(result2["message"], "User Details Exist")
+        self.assertEqual(result2["message"], "Email already taken")
         self.assertEqual(response2.status_code, 409)
 
     def test_login(self):
@@ -171,6 +173,24 @@ class AppTestCase(unittest.TestCase):
         result1 = json.loads(response1.data.decode())
         self.assertEqual(result1["message"], "Logout Successful")
         self.assertEqual(response1.status_code, 200)
+
+    def test_logout_wrong_user(self):
+        self.app.post(
+            '/api/v1/auth/login', data=json.dumps(self.data), content_type='application/json')
+        response = self.app.post(
+            '/api/v1/auth/logout', data=json.dumps(self.data12), content_type='application/json')
+        result = json.loads(response.data.decode())
+        self.assertEqual(result["message"], "Login First")
+        self.assertEqual(response.status_code, 404)
+
+    def test_logout_wrong_user(self):
+        self.app.post(
+            '/api/v1/auth/login', data=json.dumps(self.data), content_type='application/json')
+        response1 = self.app.post(
+            '/api/v1/auth/logout', data=json.dumps(self.data11), content_type='application/json')
+        result1 = json.loads(response1.data.decode())
+        self.assertEqual(result1["message"], "User not found, Login First")
+        self.assertEqual(response1.status_code, 404)
 
 
 if __name__ == '__main__':

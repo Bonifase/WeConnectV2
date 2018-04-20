@@ -26,7 +26,7 @@ def register_user():
     # check if the user details already in the list, otherwise add the details in the list
     available_emails = [x.email for x in User.users]
     if email in available_emails:
-        return make_response(jsonify({"message": "User Details Exist"}), 409)
+        return make_response(jsonify({"message": "Email already taken"}), 409)
     else:
         try:
             user = User.register_user(username, email, password)
@@ -108,10 +108,10 @@ def logout():
             return make_response(jsonify({"message": "Logout Successful"}), 200)
 
         else:
-            return make_response(jsonify({"message": "Wrong Password"}), 409)
+            return make_response(jsonify({"message": "Login First"}), 404)
 
     else:
-        return make_response(jsonify({"message": "Wrong Login Details"}), 409)
+        return make_response(jsonify({"message": "User not found, Login First"}), 404)
 
 
 # Create new business
