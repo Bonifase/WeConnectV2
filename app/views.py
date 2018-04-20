@@ -180,7 +180,7 @@ def update_business(id):
     mybusiness = [business for business in Business.businesses if business.id == id]
     if mybusiness:
         available_names = [business.name for business in Business.businesses]
-        if name in available_names: 
+        if newname in available_names: 
             return make_response(jsonify({"error": "Business already Exist, use another name"}), 409)
         mybusiness[0].update_business(
             newname, newcategory, newlocation, newdescription)
