@@ -133,7 +133,7 @@ def create_business():
             business = Business.register_business(
                 name, category, location, description)
         except AssertionError as err:
-            return jsonify({'error': err.args[0]})
+            return make_response(jsonify({"error": err.args[0]}), 409)
         myresponse = {'name': business.name, 'category': business.category,
                       'location': business.location, 'description': business.description}
     return make_response(jsonify(myresponse), 201)
@@ -183,7 +183,7 @@ def update_business(id):
             newname, newcategory, newlocation, newdescription)
         return make_response(jsonify({"message": "Business Updated", }), 201)
     else:
-        return make_response(jsonify({"message": "Businesses not available", }), 404)
+        return make_response(jsonify({"message": "Business not available", }), 404)
 
 # Delete business
 
@@ -197,7 +197,7 @@ def delete_business(id):
         Business.businesses.remove(mybusiness)
         return make_response(jsonify({"message": "Business deleted", }), 200)
     else:
-        return make_response(jsonify({"message": "No such Businesses", }), 404)
+        return make_response(jsonify({"message": "No such Business", }), 404)
 
 # Add a review for a business
 
@@ -215,7 +215,7 @@ def reviews(businessid):
         business_reviews.append(business_review)
         return make_response(jsonify({"message": "Review added Successfully"}), 201)
     else:
-        return make_response(jsonify({"message": "Business with that ID does not exist"}), 409)
+        return make_response(jsonify({"message": "Business with that ID does not exist"}), 404)
 
 
 # Get all reviews for a business

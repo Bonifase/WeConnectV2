@@ -32,6 +32,8 @@ class AppTestCase(unittest.TestCase):
                       "password": "._12345", "newpassword": "123456789"}
         self.data10 = {"username": "john",
                        "password": "&._12345", "newpassword": "&._12345"}
+        self.data11 = {"username": "user",
+                       "email": "user@gmail.com", "password": "45"}
 
         # Default user
         self.app.post('/api/v1/auth/register',
@@ -59,6 +61,14 @@ class AppTestCase(unittest.TestCase):
             '/api/v1/auth/register', data=json.dumps(self.data8), content_type='application/json')
         result = json.loads(response.data.decode())
         self.assertEqual(result["error"], "Invalid email")
+        self.assertEqual(response.status_code, 409)
+
+    def test_invalid_password(self):
+        response = self.app.post(
+            '/api/v1/auth/register', data=json.dumps(self.data11), content_type='application/json')
+        result = json.loads(response.data.decode())
+        print('ggggrgrgrgrg', result)
+        self.assertEqual(result["error"], "Invalid password")
         self.assertEqual(response.status_code, 409)
 
     def test_register_user(self):
