@@ -124,7 +124,7 @@ def create_business():
     location = data["location"]
     description = data["description"]
     # check if the business details already in the list, otherwise create the object in the list
-    available_names = [x.name for x in Business.businesses]
+    available_names = [business.name for business in Business.businesses]
     if name in available_names:
         return make_response(jsonify({"error": "Business already Exist, use another name"}), 409)
 
@@ -144,8 +144,8 @@ def create_business():
 @app.route('/api/v1/auth/businesses', methods=['GET'])
 @is_logged_in
 def view_businesses():
-    mybusinesses = [{x.id: [x.name, x.category, x.location]
-                     for x in Business.businesses}]
+    mybusinesses = [{business.id: [business.name, business.category, business.location]
+                     for business in Business.businesses}]
     if mybusinesses == [{}]:
         return make_response(jsonify({"businesses": "No Business Entry"}), 404)
     else:
@@ -157,7 +157,7 @@ def view_businesses():
 @app.route('/api/v1/auth/business/<int:id>/', methods=['GET'])
 @is_logged_in
 def get_business(id):
-    mybusiness = [x for x in Business.businesses if x.id == id]
+    mybusiness = [business for business in Business.businesses if business.id == id]
     if mybusiness:
         mybusiness = mybusiness[0]
         return make_response(jsonify({"business": {'name': mybusiness.name,
@@ -177,8 +177,11 @@ def update_business(id):
     newcategory = data["category"]
     newlocation = data["location"]
     newdescription = data["description"]
-    mybusiness = [x for x in Business.businesses if x.id == id]
+    mybusiness = [business for business in Business.businesses if business.id == id]
     if mybusiness:
+        available_names = [business.name for business in Business.businesses]
+        if name in available_names: 
+            return make_response(jsonify({"error": "Business already Exist, use another name"}), 409)
         mybusiness[0].update_business(
             newname, newcategory, newlocation, newdescription)
         return make_response(jsonify({"message": "Business Updated", }), 201)
