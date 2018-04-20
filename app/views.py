@@ -119,10 +119,10 @@ def logout():
 @is_logged_in
 def create_business():
     data = request.get_json()
-    name = data["name"]
-    category = data["category"]
-    location = data["location"]
-    description = data["description"]
+    name = data.get("name")
+    category = data.get("category")
+    location = data.get("location")
+    description = data.get("description")
     # check if the business details already in the list, otherwise create the object in the list
     available_names = [business.name for business in Business.businesses]
     if name in available_names:
@@ -173,10 +173,10 @@ def get_business(id):
 @is_logged_in
 def update_business(id):
     data = request.get_json()
-    newname = data["name"]
-    newcategory = data["category"]
-    newlocation = data["location"]
-    newdescription = data["description"]
+    newname = data.get("name")
+    newcategory = data.get("category")
+    newlocation = data.get("location")
+    newdescription = data.get("description")
     mybusiness = [business for business in Business.businesses if business.id == id]
     if mybusiness:
         available_names = [business.name for business in Business.businesses]
@@ -209,7 +209,7 @@ def delete_business(id):
 @is_logged_in
 def reviews(businessid):
     data = request.get_json()
-    reviewbody = data["description"]
+    reviewbody = data.get("description")
     # check if the review details already in the list, otherwise create the review object in the list
     mybusiness = [
         business for business in Business.businesses if business.id == businessid]
