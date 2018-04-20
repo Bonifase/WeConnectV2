@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/Bonifase/WeConnect-.svg?branch=develop)](https://travis-ci.org/Bonifase/WeConnect-)
+[![Build Status](https://travis-ci.org/Bonifase/WeConnect-.svg?branch=master)](https://travis-ci.org/Bonifase/WeConnect-)
+[![Coverage Status](https://coveralls.io/repos/github/Bonifase/WeConnect-/badge.svg?branch=master)](https://coveralls.io/github/Bonifase/WeConnect-?branch=master)
 # Project Title
 WeConnect Application.
 
