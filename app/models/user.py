@@ -17,8 +17,8 @@ class User:
         self._email = email
         self._password = password
 
-    def reset_password(self, resetpassword):
-        self.password = resetpassword
+    def reset_password(self, newpassword):
+        self.password = newpassword
 
     @property
     def username (self):
@@ -50,6 +50,18 @@ class User:
         return self._password
     @password.setter
     def password(self, value):
+        pattern = r'[a-zA-Z0-9_@&\.]{6,20}'
+        match = re.search(pattern, value)
+        if match:
+            self._password = value
+            return 
+        assert 0, 'Invalid password'
+
+    @property
+    def newpassword (self):
+        return self._password
+    @newpassword.setter
+    def newpassword(self, value):
         pattern = r'[a-zA-Z0-9_@&\.]{6,20}'
         match = re.search(pattern, value)
         if match:

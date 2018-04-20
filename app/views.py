@@ -88,8 +88,11 @@ def reset_password():
         return make_response(jsonify({"message": "Use a Different New Password"}), 409)
 
     else:
-        user[0].reset_password(newpassword)
-        return make_response(jsonify({"message": "Reset Successful"}), 201)
+        try:
+            user[0].reset_password(newpassword)
+        except AssertionError as err:
+            return make_response(jsonify({"error": err.args[0]}), 409)
+    return make_response(jsonify({"message": "Reset Successful"}), 201)
 
 # Logout User
 
@@ -182,8 +185,11 @@ def update_business(id):
         available_names = [business.name for business in Business.businesses]
         if newname in available_names: 
             return make_response(jsonify({"error": "Business already Exist, use another name"}), 409)
-        mybusiness[0].update_business(
+        try:
+            mybusiness[0].update_business(
             newname, newcategory, newlocation, newdescription)
+        except AssertionError as err:
+            return make_response(jsonify({"error": err.args[0]}), 409)
         return make_response(jsonify({"message": "Business Updated", }), 201)
     else:
         return make_response(jsonify({"message": "Business not available", }), 404)

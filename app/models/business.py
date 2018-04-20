@@ -41,3 +41,17 @@ class Business:
             self._name = value
             return
         assert 0, 'Invalid name'
+
+
+    @property
+    def newname(self):
+        return self._name
+
+    @newname.setter
+    def newname(self, value):
+        pattern = r'[a-zA-Z\. ]{3,10}'
+        match = re.search(pattern, value)
+        if match:
+            self._name = value
+            return
+        assert 0, 'Invalid name' 
