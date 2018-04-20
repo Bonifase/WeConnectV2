@@ -1,80 +1,174 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
 
-# bonifase
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+# WeConnect
+WeConnect provides a platform that brings businesses and individuals together. This platform creates awareness for businesses and gives the users the ability to write reviews about the businesses they have interacted with.  
 
-## Questions Collection [/questions]
-
-### List All Questions [GET]
-
-+ Response 200 (application/json)
-
-        [
-            {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
-            }
-        ]
-
-### Create a New Question [POST]
-
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+## Create a New User  [/api/v1/auth/register]
+You may create own account using this action. It takes a JSON
+object containing user details and create an account used to login into the system
+### Register New User[POST]
 
 + Request (application/json)
 
         {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
+            "username": "",
+            "email": "useremail@gmail.com"
+            "password": "12345"
+            
         }
+
++ Response 409 (application/json)
+Explanation of the response goes here
+    + Headers
+    
+    + Body
+
+            {
+                "message": "User Details Exist",
+                "message": "Make a complete entry"
+            }
 
 + Response 201 (application/json)
 
     + Headers
-
-            Location: /questions/2
-
+    
     + Body
 
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
+                "message": "Registered Successful"
+            }
+## Login a User  [/api/v1/auth/login]
+You may login to your own account using this action. It takes a JSON
+object containing user details and login the user into the system
+### Login a User[POST]
+
++ Request (application/json)
+
+        {
+            "username": "myname",
+            "password": "12345"
+            
+        }
+
++ Response 409 (application/json)
+
+    + Headers
+    
+    + Body
+
+            {
+                "message": "Wrong Password",
+                "message": "Wrong Login Details"
+            }
+
++ Response 201 (application/json)
+
+    + Headers
+    
+    + Body
+
+            {
+                "message": "Login Successful"
+            }
+## Reset a User Password  [/api/v1/auth/reset-password']
+Logged in user  is able to reset password to get a new password.
+### reset-password [POST]
+
++ Request (application/json)
+
+        {
+            "username": "myname",
+            "newpassword": "123456"
+            
+        }
+
++ Response 409 (application/json)
+
+    + Headers
+    
+    + Body
+
+            {
+                "message": "Type Different Password"},
+                "message": "Enter the current password"
+            }
+
++ Response 201 (application/json)
+
+    + Headers
+    
+    + Body
+
+            {
+                "message": "Reset Successful"
+            }
+## Logout a User  [/api/v1/auth/logout']
+Logged in user  is able to logout from the system.
+### Logout [POST]
+
++ Request (application/json)
+
+        {
+            "username": "myname",
+            "newpassword": "123456"
+            
+        }
+
++ Response 409 (application/json)
+
+    + Headers
+    
+    + Body
+
+            {
+                "message": "Wrong Password"
+                
+            }
+
++ Response 201 (application/json)
+
+    + Headers
+    
+    + Body
+
+            {
+                "message": "Logout Successful"
+            }
+## Create a New Business  [/api/v1/auth/businesses']
+Registered and Logged in user  is able to create a new business.
+### businesses [POST]
+
++ Request (application/json)
+
+        {
+            "name":"easyE", 
+            "category":"hardware", 
+            "location":"Mombasa", 
+            "description":"Selling hardware products"
+            
+        }
+
++ Response 409 (application/json)
+
+    + Headers
+    
+    + Body
+
+            {
+                "message": "Business already Exist, use another name"
+                
+            }
+
++ Response 201 (application/json)
+
+    + Headers
+    
+    + Body
+
+            {
+                "name":"easyE", 
+                "category":"hardware", 
+                "location":"Mombasa", 
+                "description":"Selling hardware products"
             }
