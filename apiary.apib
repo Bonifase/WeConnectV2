@@ -52,14 +52,14 @@ object containing user details and login the user into the system
         }
 
 + Response 409 (application/json)
-
+User gets the responses below when they provide wrong login details during login 
     + Headers
     
     + Body
 
             {
                 "message": "Wrong Password",
-                "message": "Wrong Login Details"
+                "message": "User email is not registered"
             }
 
 + Response 201 (application/json)
@@ -107,25 +107,7 @@ Logged in user  is able to reset password to get a new password.
 Logged in user  is able to logout from the system.
 ### Logout [POST]
 
-+ Request (application/json)
-
-        {
-            "username": "myname",
-            "newpassword": "123456"
-            
-        }
-
-+ Response 409 (application/json)
-
-    + Headers
-    
-    + Body
-
-            {
-                "message": "Wrong Password"
-                
-            }
-
+User sees the message below on successful logout
 + Response 201 (application/json)
 
     + Headers
