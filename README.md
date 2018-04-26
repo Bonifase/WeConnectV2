@@ -1,5 +1,9 @@
+<<<<<<< HEAD
 [![Build Status](https://travis-ci.org/Bonifase/WeConnect-.svg?branch=master)](https://travis-ci.org/Bonifase/WeConnect-)
 [![Coverage Status](https://coveralls.io/repos/github/Bonifase/WeConnect-/badge.svg?branch=develop)](https://coveralls.io/github/Bonifase/WeConnect-?branch=develop)
+=======
+[![Build Status](https://travis-ci.org/Bonifase/WeConnectV2.svg?branch=master)](https://travis-ci.org/Bonifase/WeConnectV2)
+>>>>>>> a235badbe0ee49d3d6106f6ba0fe056abcfe168a
 # Project Title
 WeConnect Application.
 

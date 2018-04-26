@@ -1,10 +1,17 @@
 import re
+from app import db
 
+class Business(db.Model):
+    __searchable__ = ['name', 'category', 'location']
 
-class Business:
-    businesses = []
-
-    class_counter = 1
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    category = db.Column(db.String(120))
+    location = db.Column(db.String(80))
+    description = db.Column(db.Text)
+    ownerid = db.Column(db.Integer, db.ForeignKey('user.id'))
+    reviews = db.relationship('Review', backref = 'reviewowner', lazy = 'dynamic') 
+    date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
 
     @classmethod
     def register_business(cls, name, category, location, description):
