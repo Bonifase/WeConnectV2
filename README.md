@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Bonifase/WeConnectV2.svg?branch=master)](https://travis-ci.org/Bonifase/WeConnectV2)
+
 # Project Title
 WeConnect Application.
 

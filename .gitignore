@@ -2,3 +2,5 @@ myenv
 __pycache__
 .vscode
 .cache
+.DS_Store
+venv

@@ -1,0 +1,154 @@
+FORMAT: 1A
+
+
+# WeConnect
+WeConnect provides a platform that brings businesses and individuals together. This platform creates awareness for businesses and gives the users the ability to write reviews about the businesses they have interacted with.  
+
+## Create a New User  [/api/v1/auth/register]
+You may create own account using this action. It takes a JSON
+object containing user details and create an account used to login into the system
+### Register New User[POST]
+
++ Request (application/json)
+
+        {
+            "username": "",
+            "email": "useremail@gmail.com"
+            "password": "12345"
+            
+        }
+
++ Response 409 (application/json)
+User sees this response when they try to register twice into the system
+    + Headers
+    
+    + Body
+
+            {
+                "message": "User Details Exist",
+                "message": "Make a complete entry"
+            }
+
++ Response 201 (application/json)
+This response is returned when the user registration has been successful
+    + Headers
+    
+    + Body
+
+            {
+                "message": "Registered Successful"
+            }
+## Login a User  [/api/v1/auth/login]
+You may login to your own account using this action. It takes a JSON
+object containing user details and login the user into the system
+### Login a User[POST]
+
++ Request (application/json)
+
+        {
+            "username": "myname",
+            "password": "12345"
+            
+        }
+
++ Response 409 (application/json)
+User gets the responses below when they provide wrong login details during login 
+    + Headers
+    
+    + Body
+
+            {
+                "message": "Wrong Password",
+                "message": "User email is not registered"
+            }
+
++ Response 201 (application/json)
+
+    + Headers
+    
+    + Body
+
+            {
+                "message": "Login Successful"
+            }
+## Reset a User Password  [/api/v1/auth/reset-password']
+Logged in user  is able to reset password to get a new password.
+### reset-password [POST]
+
++ Request (application/json)
+
+        {
+            "username": "myname",
+            "newpassword": "123456"
+            
+        }
+
++ Response 409 (application/json)
+
+    + Headers
+    
+    + Body
+
+            {
+                "message": "Type Different Password"},
+                "message": "Enter the current password"
+            }
+
++ Response 201 (application/json)
+
+    + Headers
+    
+    + Body
+
+            {
+                "message": "Reset Successful"
+            }
+## Logout a User  [/api/v1/auth/logout']
+Logged in user  is able to logout from the system.
+### Logout [POST]
+
+User sees the message below on successful logout
++ Response 201 (application/json)
+
+    + Headers
+    
+    + Body
+
+            {
+                "message": "Logout Successful"
+            }
+## Create a New Business  [/api/v1/auth/businesses']
+Registered and Logged in user  is able to create a new business.
+### businesses [POST]
+
++ Request (application/json)
+
+        {
+            "name":"easyE", 
+            "category":"hardware", 
+            "location":"Mombasa"
+            
+        }
+
++ Response 409 (application/json)
+
+    + Headers
+    
+    + Body
+
+            {
+                "message": "Business already Exist, use another name"
+                
+            }
+
++ Response 201 (application/json)
+
+    + Headers
+    
+    + Body
+
+            {
+                "name":"easyE", 
+                "category":"hardware", 
+                "location":"Mombasa"
+            }
