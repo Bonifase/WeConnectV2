@@ -5,12 +5,9 @@ from functools import wraps
 
 from app import app
 
-from .models import User
-from .models import Business
-from .models import Review
+from .models import *
 
 
-business_reviews = []
 
 # Endpoint to Register user and ssaving the details in a list called users
 
@@ -23,13 +20,17 @@ def register_user():
     password = data.get('password')
     if username is None:
         return make_response(jsonify({"message": "Missing key"}), 409)
+
     # check if the user details already in the list, otherwise add the details in the list
-    available_emails = [x.email for x in User.users]
+    users = User.query.all()
+    available_emails = [user.email for user in users]
     if email in available_emails:
-        return make_response(jsonify({"message": "Email already taken"}), 409)
+        return make_response(jsonify({"message": "Email already registered, login"}), 409)
+    
     else:
         try:
-            user = User.register_user(username, email, password)
+            user = User(username, email, password)
+            user.register_user()
         except AssertionError as err:
             return make_response(jsonify({'error': err.args[0]}), 409)
 
@@ -46,9 +47,10 @@ def login():
     # check if the user details exist in the list, otherwise deny access.
     if data['username'] == "" or data['password'] == "":
         return make_response(jsonify({"message": "Incomplete entry"}), 401)
-    user = [x for x in User.users if x.username == username]
+    users = User.query.all()
+    user = [user for user in users if user.username == username]
     if user:
-        if password == user[0].password:
+        if password == user.password:
             session['logged_in'] = True
             session['username'] = username
             return make_response(jsonify({"message": "Login Successful"}), 200)
@@ -57,7 +59,7 @@ def login():
             return make_response(jsonify({"message": "Wrong Password"}), 409)
 
     else:
-        return make_response(jsonify({"message": "Wrong Login Details"}), 409)
+        return make_response(jsonify({"message": "Wrong Username"}), 409)
 
 # check  if user is logged in
 
