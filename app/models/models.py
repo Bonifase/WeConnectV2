@@ -1,6 +1,9 @@
 import re
-from app import db
+from app import db, app
 from flask_bcrypt import Bcrypt
+from sqlalchemy.ext.hybrid import hybrid_property
+from datetime import datetime, timedelta
+import jwt
 
 
 class User(db.Model):
@@ -12,13 +15,13 @@ class User(db.Model):
     _password = db.Column("password", db.String(80))
     businesses = db.relationship('Business', backref = 'owner', lazy = 'dynamic')
 
-    def __init__(self, username, email, password):
+    def __init__(self, username=None, email=None, password=None):
         self.username = username
         self.email = email
-        self.password = Bcrypt().generate_password_hash(password).decode()
+        self.password = password
 
-    def reset_password(self, newpassword):
-        self.password = newpassword
+    def reset_password(self, new_password):
+        self.password = new_password
 
     def register_user(self):
         """Save a user to the database.
@@ -27,7 +30,8 @@ class User(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    @property
+
+    @hybrid_property
     def username(self):
         return self._username
 
@@ -40,7 +44,7 @@ class User(db.Model):
             return
         assert 0, 'Invalid username'
 
-    @property
+    @hybrid_property
     def email(self):
         return self._email
 
@@ -53,25 +57,25 @@ class User(db.Model):
             return
         assert 0, 'Invalid email'
 
-    @property
+    @hybrid_property
     def password(self):
         return self._password
 
     @password.setter
     def password(self, value):
-        pattern = r'[a-zA-Z0-9_@&\.]{6,20}'
+        pattern = r'^[a-zA-Z0-9_@&\.]{6,20}$'
         match = re.search(pattern, value)
         if match:
-            self._password = value
+            self._password = Bcrypt().generate_password_hash(value).decode()
             return
         assert 0, 'Invalid password'
 
-    @property
-    def newpassword(self):
+    @hybrid_property
+    def new_password(self):
         return self._password
 
-    @newpassword.setter
-    def newpassword(self, value):
+    @new_password.setter
+    def new_password(self, value):
         pattern = r'[a-zA-Z0-9_@&\.]{6,20}'
         match = re.search(pattern, value)
 
@@ -96,11 +100,12 @@ class Business(db.Model):
     reviews = db.relationship('Review', backref = 'reviewowner', lazy = 'dynamic') 
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
    
-    def __init__(self, name, category, location,description):
+    def __init__(self, name, category, location,description, userid):
         self.name = name
         self.category = category
         self.location = location
         self.description = description
+        self.userid = userid
     
     def update_business(self, data, issuer_id):
         # data  is a dict
@@ -123,7 +128,7 @@ class Business(db.Model):
         db.session.delete(self)
         db.session.commit()
 
-    @property
+    @hybrid_property
     def name(self):
         return self._name
 
@@ -136,7 +141,7 @@ class Business(db.Model):
             return
         assert 0, 'Invalid name'
 
-    @property
+    @hybrid_property
     def category(self):
         return self._category
 
@@ -149,7 +154,7 @@ class Business(db.Model):
             return
         assert 0, 'Invalid category'
 
-    @property
+    @hybrid_property
     def location(self):
         return self._location
 
@@ -161,6 +166,9 @@ class Business(db.Model):
             self._location= value
             return
         assert 0, 'Invalid location'
+
+
+
 
 class Review(db.Model):
     """This class defines the reviews table."""
@@ -174,6 +182,10 @@ class Review(db.Model):
     def __init__(self, reviewbody, businessid):
         self.reviewbody = reviewbody
         self.businessid = businessid
+
+    def save_review(self):
+        db.session.add(self)
+        db.session.commit()
         
 
         
