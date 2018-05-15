@@ -1,8 +1,6 @@
-import os
 from app import app, db
-
 import unittest
-import tempfile
+
 import json
 from flask import jsonify
 from config import app_config
@@ -13,6 +11,8 @@ class AppTestCase(unittest.TestCase):
 
     def setUp(self):
         app.testing = True
+        self.app = app
+        self.app.config.from_object(app_config['testing'])
         self.app =app.test_client()
         self.data = {"username":"username", "email":"user@gmail.com","password":"user123"}
         self.data2 = {"username":"Bill", "email":"bill@gmail.com","password":"123456"}
