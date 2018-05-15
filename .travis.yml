@@ -1,3 +1,4 @@
+
 #lanuage
 language: python
 #version
@@ -7,10 +8,8 @@ python:
 install:
   - pip install
   - pip install -r requirements.txt
-
-services:
-  - postgresql
-before_script:
-  - psql -c 'create database weconnect' -U postgres
+  - pip install coveralls
 # command to run tests
-script: cd ./api && nosetests
+script: nosetests --exe -v --with-coverage --cover-package=app
+
+after_success: coveralls
