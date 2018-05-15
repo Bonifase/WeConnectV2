@@ -1,6 +1,6 @@
 from app import app, db
 import unittest
-import tempfile
+
 import json
 from flask import jsonify
 from config import app_config
