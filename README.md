@@ -1,40 +1,39 @@
 [![Build Status](https://travis-ci.org/Bonifase/WeConnectV2.svg?branch=develop)](https://travis-ci.org/Bonifase/WeConnectV2) [![Coverage Status](https://coveralls.io/repos/github/Bonifase/WeConnectV2/badge.svg?branch=ft-database-models-157388343)](https://coveralls.io/github/Bonifase/WeConnectV2?branch=ft-database-models-157388343)
 
-# Project Title
-WeConnect Application.
-
-# Project Description
+# WeConnect
 WeConnect provides a platform that brings businesses and individuals together.
 This platform creates awareness for businesses and gives the users the ability to write reviews about the businesses they have interacted with. 
 
 
+The building blocks are:
 
-## Getting Started
+* Python 3
+* Flask
+* PostgreSQL or MySQL
 
-1. Clone and download the project from the github.
-2. To get started, Create a virtual environment for your project.
+## Setting Up for Development
 
-### Prerequisites
+These are instructions for setting up WeConnect Flask app
+in development environment.
 
-1. Create a requirements.txt file to store your dependencies.
-2. Setup Flask.
-3. Setup Pylint 
-4. Setup unit testing libraries and ensure minimal tests 
-5. Setup PostgreSQL
-6. Setup SQLAlchemy
+* prepare directory for project code and virtualenv:
 
-8. freeze the installed packages and store this setup in a requirements.txt file: use pip freeze > requirements.txt
+        $ mkdir -p ~/weconnect
+        $ cd ~/weconnect
 
-## Installing
+* prepare virtual environment
+  (with virtualenv you get pip, we'll use it soon to install requirements):
 
-1. Install the latest version of Python 3
-2. Use a virtual environment to manage the dependencies for your project, both in development and in production.
-3. Install virtualenv use: virtualenv venv. On Windows: \Python36\Scripts\virtualenv.exe venv
-4. Activate the environment: .venv/bin/activate. On Windows: venv\Scripts\activate
-5. Install Flask: Within the activated environment, use the following command to install Flask: pip install Flask
-6. copy the folder containing the files of the application into the virtual environment folder.
-7. Run the application using the command: python app.py
-8. To stop the server process, press control+C.
+        $ virtualenv --python=python3 wc-venv
+        $ source wc-venv/bin/activate
+
+* check out project code:
+
+        $ git clone https://github.com/Bonifase/WeConnect-.git
+
+* install requirements (Flask, ...) into virtualenv:
+
+        $ pip install -r weconnect/requirements.txt
 
 ## Running the tests
 1. Use nosetests to manually test the application
@@ -75,7 +74,3 @@ This is a free open source application with no license
 * Bootstrap CDN
 * LFAs
 * Team members
-
-
-
-
