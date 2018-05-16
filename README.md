@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Bonifase/WeConnectV2.svg?branch=develop)](https://travis-ci.org/Bonifase/WeConnectV2) [![Coverage Status](https://coveralls.io/repos/github/Bonifase/WeConnectV2/badge.svg?branch=ft-database-models-157388343)](https://coveralls.io/github/Bonifase/WeConnectV2?branch=ft-database-models-157388343)
+[![Build Status](https://travis-ci.org/Bonifase/WeConnectV2.svg?branch=develop)](https://travis-ci.org/Bonifase/WeConnectV2) [![Coverage Status](https://coveralls.io/repos/github/Bonifase/WeConnectV2/badge.svg?branch=ft-database-models-157388343)](https://coveralls.io/github/Bonifase/WeConnectV2?branch=ft-database-models-157388343) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/76ca7552998e46189ce6c76e725fa0a5)](https://www.codacy.com/app/Bonifase/WeConnectV2?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Bonifase/WeConnectV2&amp;utm_campaign=Badge_Grade)
 
 # WeConnect
 WeConnect provides a platform that brings businesses and individuals together.
