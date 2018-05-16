@@ -6,6 +6,7 @@ from flask_script import Manager
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "Thisismysecretkey"
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:boni@orwa@localhost/weconnect"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
