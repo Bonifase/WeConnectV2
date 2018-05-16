@@ -208,7 +208,7 @@ def create_business():
 @retrieve_all()
 def view_businesses():
     businesses = Business.query.all()
-    mybusinesses = [{business.id: [business.name, business.category, business.location]
+    mybusinesses = [{business.id: ["Business Name: "+business.name, "Business Category: "+business.category, "Business Location: "+business.location]
                      for business in businesses}]
     if mybusinesses == [{}]:
         return jsonify({"message": "No Business Entry"}), 404
@@ -311,13 +311,13 @@ def delete_business(id):
 def search_business():
 
     sql_match = '%'+request.args.get('q')+'%'
-    search_businesses = [{business.id : [business.name, business.location, business.category] 
+    search_results = [{business.id : [business.name, business.location, business.category] 
     for business in Business.query.filter(Business.name.like(sql_match)).all()}]
     
-    if search_businesses == [{}]:
+    if search_results == [{}]:
         return jsonify({"message": "No business match found"}), 404
     else:
-        return jsonify({"Businesses": search_businesses}), 200
+        return jsonify({"Businesses": search_results}), 200
     
 # Add a review for a business
 
