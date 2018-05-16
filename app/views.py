@@ -5,6 +5,9 @@ from datetime import datetime, timedelta
 from app.errorhandler import *
 from jwt.exceptions import InvalidTokenError
 
+from flask_jwt_extended import (JWTManager, jwt_required, get_jwt_identity,
+    create_access_token, get_raw_jwt, decode_token
+)
 
 from app import app
 bcrypt = Bcrypt(app)
@@ -12,25 +15,15 @@ from .models import *
 
 from app.helpers import clean_data
 from app.helpers import *
+jwt = JWTManager(app)
+blacklist = set()
+stored_reset_tokens = set()
 
+@jwt.token_in_blacklist_loader
+def check_if_token_in_blacklist(decrypted_token):
+    jti = decrypted_token['jti']
+    return jti in blacklist
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-
-        if 'x-access-token' in request.headers:
-            access_token  = request.headers['x-access-token']
-
-        if not access_token :
-            return jsonify({'message':'Login Token is Missing!'}), 401
-        try:
-            data = jwt.decode(access_token , app.config['SECRET'])
-            current_user = User.query.filter_by(id = data['id']).first()
-        except:
-            return jsonify({'message':'Token is Invalid, Please login for a new one'}), 401
-        return f(current_user=current_user, *args, **kwargs)
-    return decorated
 
 @app.route('/')
 def index():
@@ -41,10 +34,9 @@ def index():
 
 @register_user()
 def register_user():
+
     data = request.get_json()
-    # username = data.get('username')
-    # email = data.get('email')
-    # password = data.get('password')
+    
     user = {'username':data.get('username'), 'email' : data.get('email'), 'password':data.get('password')}
     try:
         cleaned_data = clean_data(**user)
@@ -72,8 +64,10 @@ def register_user():
 
 @login()
 def login():
+
     data = request.get_json()
     user = {'email' : data.get('email'), 'password':data.get('password')}
+
     try:
         cleaned_data = clean_data(**user)
     except AssertionError as error:
@@ -85,12 +79,13 @@ def login():
         user = User.query.filter_by(email=cleaned_data["email"]).first()
         if user:
             if Bcrypt().check_password_hash(user.password, cleaned_data["password"]):
-            # if generate_password_hash(data['password']) == user.password:
-                access_token = jwt.encode({'id':user.id, 'exp':datetime.utcnow() + timedelta(minutes=45)}, app.config['SECRET'])            
+    
+                access_token = create_access_token(identity=user.id)
+                           
                 if access_token:
                     response = {
                                 'message': 'You logged in successfully.',
-                                'access_token': access_token.decode()
+                                'access_token': access_token
                             }
                 return jsonify(response), 200
 
@@ -117,11 +112,16 @@ def reset():
         user = User.query.filter_by(email=email).first()
         
         if user:
-            reset_token = jwt.encode({'id':user.id, 'exp':datetime.utcnow() + timedelta(minutes=45)}, app.config['SECRET'])            
+
+            reset_token = create_access_token(identity=user.id)            
+            
             if reset_token:
+
+                stored_reset_tokens.add(reset_token)
+
                 response = {
                             'message': 'Use this token to reset your password.',
-                            'reset_token': reset_token.decode()
+                            'reset_token': reset_token
                         }
             return jsonify(response), 200
         else:
@@ -130,20 +130,23 @@ def reset():
     else:
         return jsonify({"message":"Please provide your email"}), 409
 
+"""confirms password reset"""
 
 @confirm_reset_password()
 def confirm_reset(reset_token):
     data = request.get_json()
     new_password = data.get('new_password')
 
+    user_id=decode_token(reset_token)["identity"]
+    
     if new_password != None:
         try:
-            data = jwt.decode(reset_token , app.config['SECRET'])
+            reset_token in stored_reset_tokens
         except InvalidTokenError as error:
             return jsonify({'message':'Reset password token is Invalid, Please request for a new one'}), 401
 
         try:
-            user = User.query.filter_by(id = data['id']).first()
+            user = User.query.filter_by(id = user_id).first()
             user.password = new_password
             db.session.add(user)
             db.session.commit()
@@ -151,23 +154,25 @@ def confirm_reset(reset_token):
         except AssertionError as error:
             return jsonify({"error": error.args[0]})
 
-    return jsonify({"meaasage":"No password provided"})
+    return jsonify({"meaasage":"Please provide your new password"})
+
 # Logout User
 
-
 @logout()
-def logout(current_user):
-    
-    session.clear()
+@jwt_required
+def logout():
+    jti = get_raw_jwt()['jti']
+    blacklist.add(jti)
     return make_response(jsonify({"message": "Logout Successful"}), 200)
 
         
 
 
 # Create new business
+
 @create_business()
-@token_required
-def create_business(current_user):
+@jwt_required
+def create_business():
 
     data = request.get_json()
     business = {'name':data.get('name'), 'category' : data.get('category'), 'location':data.get('location'), 'description':data.get('description')}
@@ -179,7 +184,7 @@ def create_business(current_user):
     if cleaned_data:
 
         
-        user = current_user
+        user = get_jwt_identity()
         # check if the business details already in the list, otherwise create the object in the list
         businesses = Business.query.all()
         available_names = [business.name for business in businesses]
@@ -188,7 +193,7 @@ def create_business(current_user):
 
         else:
             try:
-                business = Business(cleaned_data["name"], cleaned_data["category"], cleaned_data["location"], cleaned_data["description"], userid=user.id)
+                business = Business(cleaned_data["name"], cleaned_data["category"], cleaned_data["location"], cleaned_data["description"], userid=user)
                 business.save_business()
             except AssertionError as err:
                 return jsonify({"error": err.args[0]}), 409
@@ -201,34 +206,33 @@ def create_business(current_user):
 # Get all the businesses
 
 @retrieve_all()
-@token_required
-def view_businesses(current_user):
+def view_businesses():
     businesses = Business.query.all()
     mybusinesses = [{business.id: [business.name, business.category, business.location]
                      for business in businesses}]
     if mybusinesses == [{}]:
-        return make_response(jsonify({"message": "No Business Entry"}), 404)
+        return jsonify({"message": "No Business Entry"}), 404
     else:
-        return make_response(jsonify({"businesses": mybusinesses}), 200)
+        return jsonify({"businesses": mybusinesses}), 200
 
 #Get all the businesses but one businesss per page(pagination implementation)
 @retrieve_with_pagination()
-@token_required
-def view_businesses_per_page(current_user, page_num):
+def view_businesses_per_page(page_num):
     businesses = Business.query.paginate(per_page=1, page=page_num, error_out=True)
     for business in businesses.items:
-        if business:
-            return make_response(jsonify({'name':business.name, 'category':business.category, 
-                'location':business.location, 'description':business.description}), 200)
+        if businesses:
+            return jsonify({'name':business.name, 'category':business.category, 
+                'location':business.location, 'description':business.description}), 200
         else:
-            return  make_response(jsonify({"status": "not found", "message": "Page not found",}), 404)
+            return  jsonify({"message": "Page not found"}), 404
+
+   
 
 # Get a business by id
 
 
 @retrieve_business_by_id()
-@token_required
-def get_business(current_user, id):
+def get_business(id):
     businesses = Business.query.all()
     mybusiness = [business for business in businesses if business.id == id]
     if mybusiness:
@@ -243,8 +247,8 @@ def get_business(current_user, id):
 
 
 @update_business()
-@token_required
-def update_business(current_user, id):
+@jwt_required
+def update_business(id):
     data = request.get_json()
     business = {'name':data.get('name'), 'category' : data.get('category'), 'location':data.get('location'), 'description':data.get('description')}
     try:
@@ -254,7 +258,7 @@ def update_business(current_user, id):
 
     if cleaned_data:
 
-        user = current_user
+        user = get_jwt_identity()
 
         businesses = Business.query.all()
         target_business = [business for business in businesses if business.id == id]
@@ -264,12 +268,12 @@ def update_business(current_user, id):
             if cleaned_data["name"].lower() in available_names: 
                 return make_response(jsonify({"error": "Business already Exist, use another name"}), 409)
 
-            if user.id != target_business[0].userid:
+            if user != target_business[0].userid:
 
                 return jsonify({"message": "You cannot update someones Business", }), 404
 
             try:
-                target_business[0].update_business(cleaned_data, issuer_id = user.id)
+                target_business[0].update_business(cleaned_data, issuer_id = user)
             except AssertionError as err:
                 return jsonify({"error": err.args[0]}), 409
 
@@ -281,17 +285,17 @@ def update_business(current_user, id):
 
 
 @delete_business()
-@token_required
-def delete_business(current_user, id):
+@jwt_required
+def delete_business(id):
 
-    user = current_user
+    user = get_jwt_identity()
     businesses = Business.query.all()
     target_business = [business for business in businesses if business.id == id]
     
     if target_business:
         target_business = target_business[0]
 
-        if target_business.userid == user.id:
+        if target_business.userid == user:
 
             target_business.delete()
             return make_response(jsonify({"message": "Business deleted", }), 200)
@@ -304,8 +308,7 @@ def delete_business(current_user, id):
 
 #search business
 @search_business()
-@token_required
-def search_business(current_user):
+def search_business():
 
     sql_match = '%'+request.args.get('q')+'%'
     search_businesses = [{business.id : [business.name, business.location, business.category] 
@@ -320,8 +323,8 @@ def search_business(current_user):
 
 
 @add_business_review()
-@token_required
-def reviews(current_user, businessid):
+@jwt_required
+def reviews(businessid):
     data = request.get_json()
     reviewbody = data.get("description")
     # check if the review details already in the list, otherwise create the review object in the list
@@ -337,8 +340,7 @@ def reviews(current_user, businessid):
 
 # Get all reviews for a business
 @retrieve_all_business_reviews()
-@token_required
-def myreviews(current_user, businessid):
+def myreviews(businessid):
     business_reviews = Review.query.all()
     target_reviews = [{review.id : [review.businessid, review.reviewbody] 
     for review in business_reviews if review.businessid == businessid}]

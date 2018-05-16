@@ -3,7 +3,7 @@ from app import db, app
 from flask_bcrypt import Bcrypt
 from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import datetime, timedelta
-import jwt
+
 
 
 class User(db.Model):
@@ -106,16 +106,21 @@ class Business(db.Model):
         self.location = location
         self.description = description
         self.userid = userid
-    
+
+
+    """method that updates the business"""
     def update_business(self, data, issuer_id):
         # data  is a dict
         if issuer_id == self.userid:
             for key in data.keys():
                 value = data[key]
                 setattr(self, key, value)
+                db.session.add(self)
+                db.session.commit()
         else:
             assert 0, 'This business is registered to another user'
 
+    """method that saves the business to the database"""
     def save_business(self):
         db.session.add(self)
         db.session.commit()
@@ -132,6 +137,7 @@ class Business(db.Model):
     def name(self):
         return self._name
 
+    """sets the name of the business attribute"""
     @name.setter
     def name(self, value):
         pattern = r'[a-zA-Z\. ]{3,10}'

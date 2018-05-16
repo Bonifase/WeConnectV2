@@ -1,6 +1,7 @@
 from app import app
 
 
+""""cleans the user json data"""
 
 def clean_data(**user):
 	cleaned_data = {}
@@ -12,6 +13,8 @@ def clean_data(**user):
 			cleaned_data[key] = str(user[key])
 			
 	return cleaned_data
+
+"""cleans the business json data"""
 
 def business_data(**business):
 	business_data = {}
@@ -25,9 +28,7 @@ def business_data(**business):
 		
 	return business_data
 	
-def api():
-	api = api/v2/businesses
-	return api
+
 
 """ROUTES FOR THE VIEWS"""
 def register_user():
