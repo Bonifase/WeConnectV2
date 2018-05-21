@@ -1,10 +1,9 @@
-import re
+
 from app import db, app
 from flask_bcrypt import Bcrypt
 from sqlalchemy.ext.hybrid import hybrid_property
 from datetime import datetime, timedelta
-
-
+from app.models.check_pattern import *
 
 class User(db.Model):
     """This class defines the users table """
@@ -14,6 +13,7 @@ class User(db.Model):
     _email = db.Column("email", db.String(120), unique=True)
     _password = db.Column("password", db.String(80))
     businesses = db.relationship('Business', backref = 'owner', lazy = 'dynamic')
+    reviews = db.relationship('Review', backref = 'owner', lazy = 'dynamic')
 
     def __init__(self, username=None, email=None, password=None):
         self.username = username
@@ -30,54 +30,60 @@ class User(db.Model):
         db.session.add(self)
         db.session.commit()
 
-
+    """defines username attribute for user object"""
     @hybrid_property
     def username(self):
         return self._username
-
+    """validates with predefined patterns and sets username attribute for user object"""
     @username.setter
     def username(self, value):
-        pattern = r'[a-zA-Z]{3,8}'
-        match = re.search(pattern, value)
+        match = name_pattern(value)
         if match:
             self._username = value
             return
         assert 0, 'Invalid username'
 
+    """defines an email attribute for user object"""
     @hybrid_property
     def email(self):
         return self._email
-
+    
+    """validates with predefined patterns and sets 
+    an email attribute for user object"""
     @email.setter
     def email(self, value):
-        pattern = r'[a-zA-Z0-9_\.&-]{4,30}@[a-z]+\..'
-        match = re.search(pattern, value)
+        match = email_pattern(value)
         if match:
             self._email = value
             return
         assert 0, 'Invalid email'
 
+    """defines password attribute for user object"""
     @hybrid_property
     def password(self):
         return self._password
 
+    """validates with predefined patterns and sets 
+    password attribute for user object"""
     @password.setter
     def password(self, value):
-        pattern = r'^[a-zA-Z0-9_@&\.]{6,20}$'
-        match = re.search(pattern, value)
+        match = password_pattern(value)
         if match:
             self._password = Bcrypt().generate_password_hash(value).decode()
             return
         assert 0, 'Invalid password'
 
+    """defines new password attribute"""
     @hybrid_property
     def new_password(self):
         return self._password
 
+    """validates with predefined patterns and sets 
+    a new password attribute for user object"""
     @new_password.setter
     def new_password(self, value):
-        pattern = r'[a-zA-Z0-9_@&\.]{6,20}'
-        match = re.search(pattern, value)
+        
+        match = password_pattern(value)
 
         if match:
             self._password = value
@@ -110,7 +116,7 @@ class Business(db.Model):
 
     """method that updates the business"""
     def update_business(self, data, issuer_id):
-        # data  is a dict
+        # data  is a dictionary
         if issuer_id == self.userid:
             for key in data.keys():
                 value = data[key]
@@ -126,8 +132,9 @@ class Business(db.Model):
         db.session.commit()
 
     @staticmethod
-    def get_all():
-        return Business.query.all()
+    def businesses():
+        businesses = Business.query.all()
+        return businesses
 
     def delete(self):
         db.session.delete(self)
@@ -140,8 +147,8 @@ class Business(db.Model):
     """sets the name of the business attribute"""
     @name.setter
     def name(self, value):
-        pattern = r'[a-zA-Z\. ]{3,10}'
-        match = re.search(pattern, value)
+        
+        match = name_pattern(value)
         if match:
             self._name = value
             return
@@ -153,8 +160,8 @@ class Business(db.Model):
 
     @category.setter
     def category(self, value):
-        pattern = r'[a-zA-Z\. ]{1,15}'
-        match = re.search(pattern, value)
+        
+        match = attribute_pattern(value)
         if match:
             self._category = value
             return
@@ -166,8 +173,8 @@ class Business(db.Model):
 
     @location.setter
     def location(self, value):
-        pattern = r'[a-zA-Z\. ]{3,10}'
-        match = re.search(pattern, value)
+        
+        match = attribute_pattern(value)
         if match:
             self._location= value
             return
@@ -182,16 +189,45 @@ class Review(db.Model):
     __tablename__ = 'reviews'
 
     id = db.Column(db.Integer, primary_key=True)
-    reviewbody = db.Column(db.Text)
+    _reviewbody = db.Column("reviewbody", db.String(80))
     businessid = db.Column(db.Integer, db.ForeignKey('businesses.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     
-    def __init__(self, reviewbody, businessid):
-        self.reviewbody = reviewbody
+    def __init__(self, reviewbody, businessid, user_id):
+        self._reviewbody = reviewbody
         self.businessid = businessid
+        self.user_id = user_id
+
+    @staticmethod
+    def reviews():
+        reviews = Review.query.all()
+        return reviews
+
+    def update_review(self, data):
+        # data  is a dictionary
+            for key in data.keys():
+                value = data[key]
+                setattr(self, key, value)
+                db.session.add(self)
+                db.session.commit()
 
     def save_review(self):
         db.session.add(self)
         db.session.commit()
+
+    @hybrid_property
+    def reviewbody(self):
+        return self._reviewbody
+
+    @reviewbody.setter
+    def reviewbody(self, value):
+        
+        match = attribute_pattern(value)
+        if match:
+            self._reviewbody = value
+            return
+        assert 0, 'Invalid category'
+
         
 
         
