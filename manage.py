@@ -26,6 +26,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(80))
     businesses = db.relationship('Business', primaryjoin="and_(User.id==Business.userid )")
+    reviews = db.relationship('Review', primaryjoin="and_(User.id==Review.user_id )")
 
 class Business(db.Model):
     """This class defines the businesses table."""
@@ -45,8 +46,9 @@ class Business(db.Model):
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    reviewbody = db.Column(db.Text)
+    reviewbody = db.Column(db.String(100))
     businessid = db.Column(db.Integer, db.ForeignKey('business.id'))
+    user_id = db.Column(db.Integer,db.ForeignKey('users.id'))
 
 @manager.command
 def test():
