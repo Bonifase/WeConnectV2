@@ -1,11 +1,10 @@
 import unittest, json
 from urllib.parse import urljoin
-# from urlparse import urljoin
 from app import app
 from config import app_config
 
 from app.models.models import *
-from tests.data import *
+
 
 class BaseTestSetUp(unittest.TestCase):
     def setUp(self):
@@ -23,13 +22,7 @@ class BaseTestSetUp(unittest.TestCase):
             db.session.close()
             db.drop_all()
             db.create_all()
-
-        self.testHelper.register_user(user_data)
-        self.result = self.testHelper.login_user(user_data)
-        self.token = json.loads(self.result.data.decode())['access_token']
         
-        return self.token
-
 class TestHelper():
 
     def __init__(self):
@@ -43,20 +36,6 @@ class TestHelper():
         result = self.app.post(url, data=json.dumps(
             user_data), headers=self.headers)
         return result
-    # #Reset user password
-
-    # def reset_password(self, user_data):
-    #     url = self.base_url + '/api/v2/auth/reset-password'
-    #     result = self.app.post(url, data=json.dumps(
-    #         user_data), headers=self.headers)
-    #     return result
-
-    # def confirm_reset_password(self, user_data, token=None):
-    #     url = self.base_url + '/api/v2/auth/reset-password/{}'.format(token)
-    #     result = self.app.post(url, data=json.dumps(
-    #         confirm_password), headers=self.headers)
-    #     return result
-    # #login a user
 
     def login_user(self, user_data):
         url = self.base_url + '/api/v2/auth/login'
@@ -123,6 +102,7 @@ class TestHelper():
     def rerieve_all_reviews(self, businessid):
         url = urljoin(self.base_url,'/api/v2/{id}/reviews'.format(id=str(businessid)))
         return self.app.get(url)
+    #reset user password
 
     def reset_password(self, reset_data):
         url = self.base_url + '/api/v2/auth/reset-password'
@@ -130,6 +110,7 @@ class TestHelper():
             url,
             data=json.dumps(reset_data),
             headers=self.headers)
+    #confirm reset password
 
     def confirm_reset_password(self, reset_data, reset_token):
         url = self.base_url + '/api/v2/auth/reset-password/' + reset_token

@@ -1,12 +1,7 @@
-from app import app, db
 import unittest
-
 import json
 from flask import jsonify
-from config import app_config
 from tests import BaseTestSetUp, TestHelper
-
-from app.models.models import User
 from tests.data import *
 
 class TestBusinessCase(BaseTestSetUp): 
@@ -35,7 +30,6 @@ class TestBusinessCase(BaseTestSetUp):
         self.testHelper.create_business(business_data=business_data, token=self.token)
         response = self.testHelper.create_business(business_data=business_data, token=self.token)
         result = json.loads(response.data.decode())
-        print("hehehehehehe", result)
         self.assertEqual(
             result['error'], "Business already Exist, use another name")
         self.assertEqual(response.status_code, 409)
@@ -90,11 +84,8 @@ class TestBusinessCase(BaseTestSetUp):
         self.testHelper.register_user(user_data)
         self.result = self.testHelper.login_user(user_data)
         self.token = json.loads(self.result.data.decode())['access_token']
-        # self.testHelper.create_business(business_data, token=self.token)
-        
         response = self.testHelper.create_business(business_data=new_business, token=self.token)
         result = json.loads(response.data.decode())
-        print("BONIBONIBONI", result)
         self.assertEqual(
             result["message"], "You created this business")
         self.assertEqual(response.status_code, 201)
@@ -108,7 +99,6 @@ class TestBusinessCase(BaseTestSetUp):
         self.testHelper.create_business(business_data=business_data, token=self.token)
         response = self.testHelper.get_business_by_id(businessid=1)
         result = json.loads(response.data.decode())
-        print("riding solo", result)
         self.assertIn(business_data['name'], result['business']['Business Name'])
         self.assertEqual(response.status_code, 200)
 
@@ -121,7 +111,6 @@ class TestBusinessCase(BaseTestSetUp):
         self.testHelper.create_business(business_data=business_data, token=self.token)
         response = self.testHelper.update_business(update_data=new_business, token=self.token, businessid=2)
         result = json.loads(response.data.decode())
-        
         self.assertEqual(result['message'], "Business not available")
         self.assertEqual(response.status_code, 404)
 
@@ -133,14 +122,14 @@ class TestBusinessCase(BaseTestSetUp):
         self.token = json.loads(self.result.data.decode())['access_token']
         self.testHelper.create_business(business_data=business_data, token=self.token)
         self.testHelper.create_business(business_data=business_data, token=self.token)
-        
         response = self.testHelper.update_business(update_data=new_business,token=self.token, businessid=1)
         result = json.loads(response.data.decode())
         self.assertIn(result["message"], "Business Updated")
         self.assertEqual(response.status_code, 201)
 
     def test_update_unavailable_business(self):
-        """Test API cannot update a businesses unregisterd (PUT request)"""
+        """Test API cannot update a businesses that is unregistered (PUT request)"""
+
         self.testHelper.register_user(user_data)
         self.result = self.testHelper.login_user(user_data)
         self.token = json.loads(self.result.data.decode())['access_token']
@@ -150,7 +139,7 @@ class TestBusinessCase(BaseTestSetUp):
         self.assertEqual(response.status_code, 404)
 
     def test_update_with_available_name_fails(self):
-        """Test API cannot update a businesses with registered business name (PUT request)"""
+        """Test API cannot update a businesses with business name that already exist (PUT request)"""
 
         self.testHelper.register_user(user_data)
         self.result = self.testHelper.login_user(user_data)
@@ -171,7 +160,6 @@ class TestBusinessCase(BaseTestSetUp):
         self.testHelper.create_business(business_data=business_data, token=self.token)
         response = self.testHelper.update_business(update_data=empty_business_name, token=self.token, businessid=1)
         result = json.loads(response.data.decode())
-        print("invalid nameesssssss", result)
         self.assertIn(result["error"], "Invalid name")
         self.assertEqual(response.status_code, 409)
 
@@ -188,7 +176,7 @@ class TestBusinessCase(BaseTestSetUp):
         self.assertEqual(response.status_code, 409)
 
     def test_delete_business_works(self):
-        """Test API cann delete a businesses (DELETE request)"""
+        """Test API can delete a businesses (DELETE request)"""
 
         self.testHelper.register_user(user_data)
         self.result = self.testHelper.login_user(user_data)
@@ -202,6 +190,9 @@ class TestBusinessCase(BaseTestSetUp):
     def test_delete_unavailable_business_fails(self):
         """Test API cannot delete a businesses that is not available (DELETE request)"""
 
+        self.testHelper.register_user(user_data)
+        self.result = self.testHelper.login_user(user_data)
+        self.token = json.loads(self.result.data.decode())['access_token']
         response = self.testHelper.delete_business(businessid=3, token=self.token)
         result = json.loads(response.data.decode())
         self.assertIn(result["message"], "No such Business")
