@@ -1,12 +1,5 @@
-from app import app, db
-import unittest
-
-import json
-from flask import jsonify
-from config import app_config
+import unittest, json
 from tests import BaseTestSetUp
-
-from app.models.models import User
 from tests.data import *
 
 
@@ -17,7 +10,7 @@ class TestUserCase(BaseTestSetUp):
 
         response = self.testHelper.register_user(unavailable_username)
         result = json.loads(response.data.decode())
-        self.assertEqual(result["error"], "usernameis missing")
+        self.assertEqual(result["error"], "username key is missing")
         self.assertEqual(response.status_code, 409)
 
     def test_invalid_username_registration_fails(self):
@@ -105,6 +98,22 @@ class TestUserCase(BaseTestSetUp):
         self.assertEqual(result["message"], "Invalid email, Please try again")
         self.assertEqual(response.status_code, 409)
 
+    def test_missing_email_key_login_fails(self):
+        """Test API rejects missing email key during login (POST request)"""
+
+        response = self.testHelper.login_user(email_key_missing)
+        result = json.loads(response.data.decode())
+        self.assertEqual(result["error"], "email key is missing")
+        self.assertEqual(response.status_code, 409)
+
+    def test_missing_password_key_login_fails(self):
+        """Test API rejects missing password key during login (POST request)"""
+
+        response = self.testHelper.login_user(missing_password_key)
+        result = json.loads(response.data.decode())
+        self.assertEqual(result["error"], "password key is missing")
+        self.assertEqual(response.status_code, 409)
+
     def test_empty_login_fails(self):
         """Test API rejects empty user details during login (POST request)"""
 
@@ -131,19 +140,38 @@ class TestUserCase(BaseTestSetUp):
         self.assertEqual(response1.status_code, 409)
 
     def test_reset_user_password_works(self):
-        """Test API reset user password (POST request)"""
+        """Test API reset user password works (POST request)"""
 
         self.testHelper.register_user(user_data)
         response1 = self.testHelper.reset_password(reset_data=reset_password)
         result1 = json.loads(response1.data.decode())
-        self.assertEqual(result1["message"], "Use this token to reset your password.")
+        self.assertEqual(result1["message"], 
+            "Use this token to reset your password.")
         self.assertEqual(response1.status_code, 200)
         token = result1["reset_token"]
-        response2 = self.testHelper.confirm_reset_password(reset_data=confirm_password,reset_token=token)
+        response2 = self.testHelper.confirm_reset_password(
+            reset_data=confirm_password,reset_token=token)
         result2 = json.loads(response2.data.decode())
 
         self.assertEqual(result2["message"], "password reset Successful")
         self.assertEqual(response2.status_code, 200)
+
+    def test_invalid_reset_token_fails(self):
+        """Test API reset user password works (POST request)"""
+
+        self.testHelper.register_user(user_data)
+        response1 = self.testHelper.reset_password(reset_data=reset_password)
+        result1 = json.loads(response1.data.decode())
+        self.assertEqual(result1["message"], 
+            "Use this token to reset your password.")
+        self.assertEqual(response1.status_code, 200)
+        token = "bdvfugdygduywg"
+        response2 = self.testHelper.confirm_reset_password(
+            reset_data=confirm_password,reset_token=token)
+        result2 = json.loads(response2.data.decode())
+
+        self.assertEqual(result2["msg"], "Not enough segments")
+        self.assertEqual(response2.status_code, 422)
 
     def test_reset_unregistered_user_password_fails(self):
         """Test API rejects reset password request from unregistered email (POST request)"""

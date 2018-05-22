@@ -1,11 +1,8 @@
-from app import app, db
-import unittest
 
+import unittest
 import json
 from tests import BaseTestSetUp, TestHelper
-from config import app_config
 
-from app.models.models import Review
 from tests.data import *
 
 
@@ -13,7 +10,7 @@ class TestReviewCase(BaseTestSetUp):
 
 
     def test_add_reviews_works(self):
-      """Test API rejects create a business with existing name (POST request)"""
+      """Test API add a review for existing business (POST request)"""
 
       self.testHelper.register_user(user_data)
       self.result = self.testHelper.login_user(user_data)
@@ -26,7 +23,7 @@ class TestReviewCase(BaseTestSetUp):
 
 
     def test_add_reviews_for_unavailable_business_id_fails(self):
-      """Test API rejects create a business with existing name (POST request)"""
+      """Test API rejects create a review for a business that does not exist(POST request)"""
 
       self.testHelper.register_user(user_data)
       self.result = self.testHelper.login_user(user_data)
@@ -39,7 +36,7 @@ class TestReviewCase(BaseTestSetUp):
       self.assertEqual(response.status_code, 404)
 
     def test_available_reviews_works(self):
-      """Test API retrieves business reviews (GET request)"""
+      """Test API retrieves all reviews of a business(GET request)"""
 
       self.testHelper.register_user(user_data)
       self.result = self.testHelper.login_user(user_data)
@@ -53,7 +50,7 @@ class TestReviewCase(BaseTestSetUp):
       self.assertEqual(response.status_code, 200)
 
     def test_unvailable_reviews_fails(self):
-      """Test API rejects create a business with existing name (POST request)"""
+      """Test API rejects retrieve a business review for non existant business (GET request)"""
 
       self.testHelper.register_user(user_data)
       self.result = self.testHelper.login_user(user_data)
