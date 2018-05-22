@@ -1,7 +1,5 @@
 from flask import request, jsonify,json
-from functools import wraps
 from  flask_bcrypt import Bcrypt
-from datetime import datetime, timedelta
 from app.errorhandler import *
 from jwt.exceptions import InvalidTokenError
 
@@ -17,6 +15,7 @@ from app.helpers import clean_data
 from app.pagination import get_paginated_list
 from app.helpers import *
 jwt = JWTManager(app)
+
 blacklist = set()
 stored_reset_tokens = set()
 
@@ -29,7 +28,7 @@ def check_if_token_in_blacklist(decrypted_token):
 def index():
     return jsonify("Welcome To WeConnect")
 
-# Endpoint to Register user and ssaving the details in a list called users
+# Endpoint to Register user and saving the details in a list called users
 @register_user()
 def register_user():
 
@@ -59,8 +58,7 @@ def register_user():
 
         return jsonify({"message": "You registered successfully. Please log in"}), 201
 
-    # Login user
-
+# Login user
 @login()
 def login():
 
@@ -90,7 +88,6 @@ def login():
 
             else:
                 return jsonify({"message":"wrong password"})
-
 
         else:
             return jsonify({"message": "Invalid email, Please try again"}), 409
@@ -197,8 +194,7 @@ def create_business():
 
 # Get all the businesses
 @retrieve_all()
-def view_businesses():
-    
+def view_businesses(): 
     mybusinesses = [{business.id: ["Business Name: "+business.name, 
     "Business Category: "+business.category, "Business Location: "+business.location, 
     "Date Created: "+"{:%m/%d/%Y}".format(business.date_created)]
@@ -348,12 +344,16 @@ def search_business():
         limit = int(request.args.get('limit', 20))
         pagination = get_paginated_list(start=page, limit=limit, url="/businesses/search")
         paginated_data = pagination['results']
+        previous_page = pagination['previous']
+        next_page= pagination['next']
         mybusinesses = [{business.id: ["Business Name: "+business.name, 
         "Business Category: "+business.category, "Business Location: "+business.location, 
         "Date Created: "+"{:%m/%d/%Y}".format(business.date_created)]
                          for business in paginated_data}]
-        response = {"results":"ok",
+        response = {
                     "business_href":business_href % page,
+                    "Prevoius_page":previous_page,
+                    "Next_page":next_page,
                     "businesses": mybusinesses}
 
         return jsonify(response)
@@ -363,25 +363,24 @@ def search_business():
 def reviews(businessid):
     data = request.get_json()
     reviewbody = data.get("description")
+    review = {'description':data.get('description')}
+    try:
+        cleaned_data = review_data(**review)
+    except AssertionError as error:
+        return jsonify({'error': error.args[0]}), 409
 
-    user_id = get_jwt_identity()
+    if cleaned_data:
+        user_id = get_jwt_identity()
 
-    # check if the review details already in the list, otherwise create the review object in the list
-    mybusiness = [
-        business for business in Business.businesses() if business.id == businessid]
-    if mybusiness:
-        target_review = [review for review in Review.query.all() if user_id == review.user_id]
-        if target_review:
-            target_review[0].update_review(data)
-            return jsonify({"message": "Review Updated", }), 201
+        # check if the review details already in the list, otherwise create the review object in the list 
+        target_business = Business.query.filter_by(id=businessid).first()
+        if target_business:
 
+                business_review = Review(reviewbody, businessid, user_id)
+                business_review.save_review()
+                return jsonify({"message": "Review added Successfully"}), 201
         else:
-
-            business_review = Review(reviewbody, businessid, user_id)
-            business_review.save_review()
-            return jsonify({"message": "Review added Successfully"}), 201
-    else:
-        return jsonify({"message": "Business with that ID does not exist"}), 404
+            return jsonify({"message": "Business with that ID does not exist"}), 404
 
 # Get all reviews for a business
 @retrieve_all_business_reviews()

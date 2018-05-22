@@ -1,10 +1,4 @@
-from app import app, db
-from flask import request
-from .models import *
-from math import ceil
-
-
-
+from app import app
 """"cleans the user json data"""
 
 def clean_data(**user):
@@ -12,25 +6,33 @@ def clean_data(**user):
 	for key in user:
 		if user[key] is None:
 
-			assert False, key + 'is missing'
+			assert False, key + ' key is missing'
 		else:
 			cleaned_data[key] = str(user[key])
 			
 	return cleaned_data
 
-"""cleans the business json data"""
+"""cleans the business json data, check for missing key"""
 
 def business_data(**business):
 	business_data = {}
 	for key in business:
 		if business[key] is None:
-
 			assert False, key + ' key is missing'
 		else:
-			business_data[key] = str(business[key])
-			
-		
+			business_data[key] = str(business[key])	
 	return business_data
+
+"""cleans the review json data, check for missing key"""
+
+def review_data(**review):
+	review_data = {}
+	for key in review:
+		if review[key] is None:
+			assert False, key + ' key is missing'
+		else:
+			review_data[key] = str(review[key])	
+	return review_data
 	
 """ROUTES FOR THE VIEWS"""
 def register_user():
