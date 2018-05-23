@@ -10,7 +10,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:boni@orwa@localho
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True or False
 db = SQLAlchemy(app)
 
-
+#initialize migrate
 migrate = Migrate(app, db)
 manager = Manager(app)
 
