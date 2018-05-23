@@ -7,7 +7,7 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     BUSINESSES_PER_PAGE = 5
     
-
+#Development env settings
 class DevelopmentConfig(Config):
     """Configurations for Development."""
     DEBUG = True
