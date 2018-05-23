@@ -102,7 +102,7 @@ class Business(db.Model):
     _category = db.Column("category", db.String(120))
     _location = db.Column("location", db.String(80))
     description = db.Column(db.Text)
-    userid = db.Column(db.Integer, db.ForeignKey('users.id'))
+    userid = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE', onupdate='CASCADE'))
     reviews = db.relationship('Review', backref = 'reviewowner', lazy = 'dynamic') 
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
    
@@ -190,7 +190,7 @@ class Review(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     _reviewbody = db.Column("reviewbody", db.String(80))
-    businessid = db.Column(db.Integer, db.ForeignKey('businesses.id'))
+    businessid = db.Column(db.Integer, db.ForeignKey('businesses.id', ondelete="CASCADE", onupdate="CASCADE"))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     
     def __init__(self, reviewbody, businessid, user_id):

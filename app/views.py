@@ -340,8 +340,12 @@ def search_business():
         return jsonify(response)
 
     if "page" in request.args:
-        page = int(request.args.get('page', 1))
-        limit = int(request.args.get('limit', 20))
+        try:
+            page = int(request.args.get('page', 1))
+            limit = int(request.args.get('limit', 20))
+        except (TypeError, ValueError):
+            return jsonify({"error": "Invalid pagination limit value"})
+
         pagination = get_paginated_list(start=page, limit=limit, url="/businesses/search")
         paginated_data = pagination['results']
         previous_page = pagination['previous']

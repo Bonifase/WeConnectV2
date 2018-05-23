@@ -35,7 +35,7 @@ class TestReviewCase(BaseTestSetUp):
                          "Business with that ID does not exist")
       self.assertEqual(response.status_code, 404)
 
-    def test_available_reviews_works(self):
+    def test_get_available_reviews_works(self):
       """Test API retrieves all reviews of a business(GET request)"""
 
       self.testHelper.register_user(user_data)
@@ -50,7 +50,7 @@ class TestReviewCase(BaseTestSetUp):
       self.assertEqual(response.status_code, 200)
 
     def test_unvailable_reviews_fails(self):
-      """Test API rejects retrieve a business review for non existant business (GET request)"""
+      """Test API rejects retrieve a business review for non existent business (GET request)"""
 
       self.testHelper.register_user(user_data)
       self.result = self.testHelper.login_user(user_data)
