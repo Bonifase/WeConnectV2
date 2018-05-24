@@ -1,6 +1,5 @@
 from flask import Flask
-
-import json, jwt, datetime
+import json
 from flask_login import LoginManager
 
 from flask_sqlalchemy import SQLAlchemy
@@ -11,18 +10,12 @@ from flask_jwt_extended import (
     get_jwt_identity
 )
 
-
 app = Flask(__name__)
+db = SQLAlchemy(app)
+from app import views
 
 app.config['JWT_SECRET_KEY'] = 'supersecretishere'
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
-
 app.config.from_object('config.DevelopmentConfig')
 
-
-db = SQLAlchemy(app)
-
-
-
-from app import views

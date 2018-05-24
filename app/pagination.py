@@ -1,6 +1,7 @@
 from flask import abort
 from .models import *
 
+
 def get_paginated_list(url, start, limit):
     # check if page exists
     results = Business.query.all()

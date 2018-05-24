@@ -1,16 +1,19 @@
 import os
+
+
 class Config(object):
     """Parent configuration class."""
     DEBUG = False
     CSRF_ENABLED = True
     SECRET = os.getenv('SECRET')
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
-    BUSINESSES_PER_PAGE = 5
-    
-#Development env settings
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')  
+"""Development env settings"""
+
+
 class DevelopmentConfig(Config):
     """Configurations for Development."""
     DEBUG = True
+
 
 class TestingConfig(Config):
     """Configurations for Testing, with a separate test database."""
@@ -18,9 +21,11 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = "postgresql://postgres:boni@orwa@localhost/test_db"
     DEBUG = True
 
+
 class StagingConfig(Config):
     """Configurations for Staging."""
     DEBUG = True
+
 
 class ProductionConfig(Config):
     """Configurations for Production."""

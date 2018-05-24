@@ -1,4 +1,5 @@
-import unittest, json
+import unittest
+import json
 from tests import BaseTestSetUp
 from tests.data import *
 
@@ -49,8 +50,7 @@ class TestUserCase(BaseTestSetUp):
         """Test API rejects non-string password registration (POST request)"""
 
         response = self.testHelper.register_user(non_string_password)
-        result = json.loads(response.data.decode())
-        
+        result = json.loads(response.data.decode())        
         self.assertEqual(result["error"], "Invalid password")
         self.assertEqual(response.status_code, 409)
 
@@ -58,8 +58,7 @@ class TestUserCase(BaseTestSetUp):
         """Test API rejects invalid password registration (POST request)"""
 
         response = self.testHelper.register_user(invalid_password)
-        result = json.loads(response.data.decode())
-        
+        result = json.loads(response.data.decode())       
         self.assertEqual(result["error"], "Invalid password")
         self.assertEqual(response.status_code, 409)
 
@@ -73,11 +72,9 @@ class TestUserCase(BaseTestSetUp):
 
     def test_duplicate_user_registration_fails(self):
         """Test API rejects registration of a user email twice (POST request)"""
-        
         self.testHelper.register_user(user_data)
         response2 = self.testHelper.register_user(user_data)
         result2 = json.loads(response2.data.decode())
-
         self.assertEqual(result2["message"], "User already exists. Please login")
         self.assertEqual(response2.status_code, 409)
 
@@ -150,7 +147,7 @@ class TestUserCase(BaseTestSetUp):
         self.assertEqual(response1.status_code, 200)
         token = result1["reset_token"]
         response2 = self.testHelper.confirm_reset_password(
-            reset_data=confirm_password,reset_token=token)
+            reset_data=confirm_password, reset_token=token)
         result2 = json.loads(response2.data.decode())
 
         self.assertEqual(result2["message"], "password reset Successful")
@@ -167,7 +164,7 @@ class TestUserCase(BaseTestSetUp):
         self.assertEqual(response1.status_code, 200)
         token = "bdvfugdygduywg"
         response2 = self.testHelper.confirm_reset_password(
-            reset_data=confirm_password,reset_token=token)
+            reset_data=confirm_password, reset_token=token)
         result2 = json.loads(response2.data.decode())
 
         self.assertEqual(result2["msg"], "Not enough segments")
@@ -179,6 +176,3 @@ class TestUserCase(BaseTestSetUp):
         response = self.testHelper.reset_password(reset_data=unregistered_user)
         result = json.loads(response.data.decode())
         self.assertEqual(result["message"], "User does not exixt, please register")
-
-
-    
