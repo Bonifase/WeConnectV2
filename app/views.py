@@ -24,7 +24,7 @@ def check_if_token_in_blacklist(decrypted_token):
     jti = decrypted_token['jti']
     return jti in blacklist
 
-@app.route('/')
+@app.route('/api')
 def index():
     return jsonify("Welcome To WeConnect")
 
@@ -350,8 +350,7 @@ def search_business():
         paginated_data = pagination['results']
         previous_page = pagination['previous']
         next_page= pagination['next']
-        mybusinesses = [{business.id: ["Business Name: "+business.name, 
-        "Business Category: "+business.category, "Business Location: "+business.location, 
+        mybusinesses = [{business.id: ["Business Name: "+business.name, "Business Category: "+business.category, "Business Location: "+business.location, 
         "Date Created: "+"{:%m/%d/%Y}".format(business.date_created)]
                          for business in paginated_data}]
         response = {

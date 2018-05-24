@@ -2,7 +2,6 @@
 from app import db, app
 from flask_bcrypt import Bcrypt
 from sqlalchemy.ext.hybrid import hybrid_property
-from datetime import datetime, timedelta
 from app.models.check_pattern import *
 
 class User(db.Model):
@@ -202,14 +201,6 @@ class Review(db.Model):
     def reviews():
         reviews = Review.query.all()
         return reviews
-
-    def update_review(self, data):
-        # data  is a dictionary
-            for key in data.keys():
-                value = data[key]
-                setattr(self, key, value)
-                db.session.add(self)
-                db.session.commit()
 
     def save_review(self):
         db.session.add(self)
