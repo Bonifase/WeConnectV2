@@ -10,11 +10,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:boni@orwa@localho
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True or False
 db = SQLAlchemy(app)
 
-
+"""initialize migrate"""
 migrate = Migrate(app, db)
 manager = Manager(app)
-
 manager.add_command('db', MigrateCommand)
+
+
 class User(db.Model):
     """This class defines the users table """
     __tablename__ = 'users'
@@ -23,8 +24,11 @@ class User(db.Model):
     username = db.Column(db.String(80))
     email = db.Column(db.String(120), unique=True)
     password = db.Column(db.String(80))
-    businesses = db.relationship('Business', primaryjoin="and_(User.id==Business.userid )")
-    reviews = db.relationship('Review', primaryjoin="and_(User.id==Review.user_id )")
+    businesses = db.relationship(
+        'Business', primaryjoin="and_(User.id==Business.userid )")
+    reviews = db.relationship(
+        'Review', primaryjoin="and_(User.id==Review.user_id )")
+
 
 class Business(db.Model):
     """This class defines the businesses table."""
@@ -39,14 +43,17 @@ class Business(db.Model):
     location = db.Column(db.String(80))
     description = db.Column(db.Text)
     userid = db.Column(db.Integer, db.ForeignKey('users.id'))
-    reviews = db.relationship('Review',primaryjoin="and_(Business.id==Review.businessid )") 
+    reviews = db.relationship(
+        'Review', primaryjoin="and_(Business.id==Review.businessid )") 
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
+
 
 class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     reviewbody = db.Column(db.String(100))
     businessid = db.Column(db.Integer, db.ForeignKey('business.id'))
-    user_id = db.Column(db.Integer,db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
 
 @manager.command
 def test():

@@ -1,6 +1,7 @@
 from flask import abort
 from .models import *
 
+
 def get_paginated_list(url, start, limit):
     # check if page exists
     results = Business.query.all()
@@ -21,11 +22,13 @@ def get_paginated_list(url, start, limit):
         limit_copy = start - 1
         obj['previous'] = url + '?start=%d&limit=%d' % (start_copy, limit_copy)
     # make next url
-    if start + limit > count:
+    if (start-1)*limit + limit > count: 
         obj['next'] = ''
     else:
         start_copy = start + limit
         obj['next'] = url + '?start=%d&limit=%d' % (start_copy, limit)
     # finally extract result according to bounds
-    obj['results'] = results[(start - 1):(start - 1 + limit)]
+    offset = (start - 1)*limit
+    slice_end = (offset + limit)
+    obj['results'] = results[offset:slice_end]
     return obj

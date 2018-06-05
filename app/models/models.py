@@ -2,8 +2,8 @@
 from app import db, app
 from flask_bcrypt import Bcrypt
 from sqlalchemy.ext.hybrid import hybrid_property
-from datetime import datetime, timedelta
 from app.models.check_pattern import *
+
 
 class User(db.Model):
     """This class defines the users table """
@@ -12,8 +12,8 @@ class User(db.Model):
     _username = db.Column("username", db.String(80))
     _email = db.Column("email", db.String(120), unique=True)
     _password = db.Column("password", db.String(80))
-    businesses = db.relationship('Business', backref = 'owner', lazy = 'dynamic')
-    reviews = db.relationship('Review', backref = 'owner', lazy = 'dynamic')
+    businesses = db.relationship('Business', backref='owner', lazy='dynamic')
+    reviews = db.relationship('Review', backref='owner', lazy='dynamic')
 
     def __init__(self, username=None, email=None, password=None):
         self.username = username
@@ -34,7 +34,7 @@ class User(db.Model):
     @hybrid_property
     def username(self):
         return self._username
-    """validates with predefined patterns and sets username attribute for user object"""
+    """validates with predefined patterns"""
     @username.setter
     def username(self, value):
         match = name_pattern(value)
@@ -47,7 +47,7 @@ class User(db.Model):
     @hybrid_property
     def email(self):
         return self._email
-    
+
     """validates with predefined patterns and sets 
     an email attribute for user object"""
     @email.setter
@@ -82,7 +82,7 @@ class User(db.Model):
     a new password attribute for user object"""
     @new_password.setter
     def new_password(self, value):
-        
+      
         match = password_pattern(value)
 
         if match:
@@ -102,19 +102,19 @@ class Business(db.Model):
     _category = db.Column("category", db.String(120))
     _location = db.Column("location", db.String(80))
     description = db.Column(db.Text)
-    userid = db.Column(db.Integer, db.ForeignKey('users.id'))
-    reviews = db.relationship('Review', backref = 'reviewowner', lazy = 'dynamic') 
+    userid = db.Column(db.Integer, db.ForeignKey(
+        'users.id', ondelete='CASCADE', onupdate='CASCADE'))
+    reviews = db.relationship('Review', backref='reviewowner', lazy='dynamic') 
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
-   
-    def __init__(self, name, category, location,description, userid):
+
+    def __init__(self, name, category, location, description, userid):
         self.name = name
         self.category = category
         self.location = location
         self.description = description
         self.userid = userid
-
-
     """method that updates the business"""
+
     def update_business(self, data, issuer_id):
         # data  is a dictionary
         if issuer_id == self.userid:
@@ -146,8 +146,7 @@ class Business(db.Model):
 
     """sets the name of the business attribute"""
     @name.setter
-    def name(self, value):
-        
+    def name(self, value):       
         match = name_pattern(value)
         if match:
             self._name = value
@@ -159,8 +158,7 @@ class Business(db.Model):
         return self._category
 
     @category.setter
-    def category(self, value):
-        
+    def category(self, value):       
         match = attribute_pattern(value)
         if match:
             self._category = value
@@ -172,15 +170,12 @@ class Business(db.Model):
         return self._location
 
     @location.setter
-    def location(self, value):
-        
+    def location(self, value):      
         match = attribute_pattern(value)
         if match:
-            self._location= value
+            self._location = value
             return
         assert 0, 'Invalid location'
-
-
 
 
 class Review(db.Model):
@@ -190,9 +185,9 @@ class Review(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     _reviewbody = db.Column("reviewbody", db.String(80))
-    businessid = db.Column(db.Integer, db.ForeignKey('businesses.id'))
+    businessid = db.Column(db.Integer, db.ForeignKey('businesses.id', ondelete="CASCADE", onupdate="CASCADE"))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    
+
     def __init__(self, reviewbody, businessid, user_id):
         self._reviewbody = reviewbody
         self.businessid = businessid
@@ -203,14 +198,6 @@ class Review(db.Model):
         reviews = Review.query.all()
         return reviews
 
-    def update_review(self, data):
-        # data  is a dictionary
-            for key in data.keys():
-                value = data[key]
-                setattr(self, key, value)
-                db.session.add(self)
-                db.session.commit()
-
     def save_review(self):
         db.session.add(self)
         db.session.commit()
@@ -220,14 +207,9 @@ class Review(db.Model):
         return self._reviewbody
 
     @reviewbody.setter
-    def reviewbody(self, value):
-        
+    def reviewbody(self, value):      
         match = attribute_pattern(value)
         if match:
             self._reviewbody = value
             return
-        assert 0, 'Invalid category'
-
-        
-
-        
+        assert 0, 'Invalid category'      
