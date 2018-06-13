@@ -1,4 +1,5 @@
-import unittest, json
+import unittest
+import json
 from urllib.parse import urljoin
 from app import app
 from config import app_config
@@ -22,14 +23,15 @@ class BaseTestSetUp(unittest.TestCase):
             db.session.close()
             db.drop_all()
             db.create_all()
-        
+
+
 class TestHelper():
 
     def __init__(self):
         self.base_url = 'http://127.0.0.1:5000'
         self.headers = {'content-type': 'application/json'}
         self.app = app.test_client()
-    #Create a new user
+    # Create a new user
 
     def register_user(self, user_data):
         url = self.base_url + '/api/v2/auth/register'
@@ -42,7 +44,7 @@ class TestHelper():
         result = self.app.post(url, data=json.dumps(
             user_data), headers=self.headers)
         return result
-    #logout a user
+    # logout a user
 
     def logout_user(self, token=None):
         url = self.base_url + '/api/v2/auth/logout'
@@ -51,7 +53,7 @@ class TestHelper():
             headers={
                 **self.headers,
                 'Authorization': 'Bearer {}'.format(token)})
-    #create a new business
+    # create a new business
 
     def create_business(self, business_data, token):
         url = self.base_url + '/api/v2/businesses'
@@ -61,12 +63,12 @@ class TestHelper():
             headers={
                 **self.headers,
                 "Authorization": 'Bearer {}'.format(token)})
-    #Retrieve all the available businesses
+    # Retrieve all the available businesses
 
     def get_businesses(self):
         url = self.base_url + '/api/v2/businesses'
         return self.app.get(url)
-    #method to get business by id
+    # method to get business by id
 
     def get_business_by_id(self, businessid):
         url = self.base_url + '/api/v2/businesses/{id}'.format(id=businessid)
@@ -81,7 +83,7 @@ class TestHelper():
             headers={
                 **self.headers,
                 'authorization': 'Bearer {}'.format(token)})
-    #method to delete business
+    # method to delete business
 
     def delete_business(self, businessid, token):
         url = self.base_url + '/api/v2/businesses/{}'.format(businessid)
@@ -90,19 +92,21 @@ class TestHelper():
             headers={
                 **self.headers,
                 'Authorization': 'Bearer {}'.format(token)})
-    #Add review to a business method
+    # Add review to a business method
 
     def add_business_review(self, businessid, review_data, token):
-        url = urljoin(self.base_url,'/api/v2/{id}/reviews'.format(id=str(businessid)))
+        url = urljoin(
+            self.base_url, '/api/v2/{id}/reviews'.format(id=str(businessid)))
         return self.app.post(
             url, data=json.dumps(review_data), headers={
                 **self.headers, 'Authorization': 'Bearer {}'.format(token)})
-    #get all the reviews of a particular business
+    # get all the reviews of a particular business
 
     def rerieve_all_reviews(self, businessid):
-        url = urljoin(self.base_url,'/api/v2/{id}/reviews'.format(id=str(businessid)))
+        url = urljoin(
+            self.base_url, '/api/v2/{id}/reviews'.format(id=str(businessid)))
         return self.app.get(url)
-    #reset user password
+    # reset user password
 
     def reset_password(self, reset_data):
         url = self.base_url + '/api/v2/auth/reset-password'
@@ -110,7 +114,7 @@ class TestHelper():
             url,
             data=json.dumps(reset_data),
             headers=self.headers)
-    #confirm reset password
+    # confirm reset password
 
     def confirm_reset_password(self, reset_data, reset_token):
         url = self.base_url + '/api/v2/auth/reset-password/' + reset_token
@@ -118,5 +122,3 @@ class TestHelper():
             url,
             data=json.dumps(reset_data),
             headers=self.headers)
-
-

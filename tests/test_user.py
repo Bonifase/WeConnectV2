@@ -67,15 +67,17 @@ class TestUserCase(BaseTestSetUp):
 
         response = self.testHelper.register_user(new_user)
         result = json.loads(response.data.decode())
-        self.assertEqual(result["message"], "You registered successfully. Please log in")
+        self.assertEqual(result[
+            "message"], "You registered successfully. Please log in")
         self.assertEqual(response.status_code, 201)
 
     def test_duplicate_user_registration_fails(self):
-        """Test API rejects registration of a user email twice (POST request)"""
+        """Test API rejects double registration (POST request)"""
         self.testHelper.register_user(user_data)
         response2 = self.testHelper.register_user(user_data)
         result2 = json.loads(response2.data.decode())
-        self.assertEqual(result2["message"], "User already exists. Please login")
+        self.assertEqual(result2[
+            "message"], "User already exists. Please login")
         self.assertEqual(response2.status_code, 409)
 
     def test_user_login_works(self):
@@ -120,7 +122,7 @@ class TestUserCase(BaseTestSetUp):
         self.assertEqual(response.status_code, 409)
 
     def test_unregistered_user_login_fails(self):
-        """Test API rejects login requests from unregistered users (POST request)"""
+        """Test API rejects unregistered users login (POST request)"""
 
         response = self.testHelper.login_user(unregistered_user)
         result = json.loads(response.data.decode())
@@ -128,7 +130,7 @@ class TestUserCase(BaseTestSetUp):
         self.assertEqual(response.status_code, 409)
 
     def test_unavailable_email_not_allowed(self):
-        """Test API rejects reset password request from empty email (POST request)"""
+        """Test API rejects empty email reset password(POST request)"""
 
         self.testHelper.register_user(user_data)
         response1 = self.testHelper.reset_password(unavailable_email)
@@ -142,8 +144,8 @@ class TestUserCase(BaseTestSetUp):
         self.testHelper.register_user(user_data)
         response1 = self.testHelper.reset_password(reset_data=reset_password)
         result1 = json.loads(response1.data.decode())
-        self.assertEqual(result1["message"], 
-            "Use this token to reset your password.")
+        self.assertEqual(result1[
+            "message"], "reset your password token.")
         self.assertEqual(response1.status_code, 200)
         token = result1["reset_token"]
         response2 = self.testHelper.confirm_reset_password(
@@ -159,8 +161,8 @@ class TestUserCase(BaseTestSetUp):
         self.testHelper.register_user(user_data)
         response1 = self.testHelper.reset_password(reset_data=reset_password)
         result1 = json.loads(response1.data.decode())
-        self.assertEqual(result1["message"], 
-            "Use this token to reset your password.")
+        self.assertEqual(result1[
+            "message"], "reset your password token.")
         self.assertEqual(response1.status_code, 200)
         token = "bdvfugdygduywg"
         response2 = self.testHelper.confirm_reset_password(
@@ -171,8 +173,9 @@ class TestUserCase(BaseTestSetUp):
         self.assertEqual(response2.status_code, 422)
 
     def test_reset_unregistered_user_password_fails(self):
-        """Test API rejects reset password request from unregistered email (POST request)"""
+        """Test API rejects reset-password for unreg email(POST request)"""
 
         response = self.testHelper.reset_password(reset_data=unregistered_user)
         result = json.loads(response.data.decode())
-        self.assertEqual(result["message"], "User does not exixt, please register")
+        self.assertEqual(result[
+            "message"], "User does not exixt, please register")

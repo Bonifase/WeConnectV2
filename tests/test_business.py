@@ -36,7 +36,7 @@ class TestBusinessCase(BaseTestSetUp):
         self.assertEqual(response.status_code, 409)
 
     def test_short_business_name_does_not_work(self):
-        """Test API can only createvalid business name that is not too short (POST request)"""
+        """Test API rejects short business name (POST request)"""
 
         self.testHelper.register_user(user_data)
         self.result = self.testHelper.login_user(user_data)
@@ -111,7 +111,7 @@ class TestBusinessCase(BaseTestSetUp):
         self.assertEqual(response.status_code, 200)
 
     def test_update_unavailable_businesses_fails(self):
-        """Test API rjects update a businesses that isnt available (PUT request)"""
+        """Test API rejects update unregistered businesses (PUT request)"""
 
         self.testHelper.register_user(user_data)
         self.result = self.testHelper.login_user(user_data)
@@ -153,7 +153,7 @@ class TestBusinessCase(BaseTestSetUp):
         self.assertEqual(response.status_code, 404)
 
     def test_update_with_available_name_fails(self):
-        """Test API cannot update a businesses with business name that already exist (PUT request)"""
+        """Test API cannot update with existing business name (PUT request)"""
 
         self.testHelper.register_user(user_data)
         self.result = self.testHelper.login_user(user_data)
@@ -168,7 +168,7 @@ class TestBusinessCase(BaseTestSetUp):
         self.assertEqual(response.status_code, 409)
 
     def test_update_with_invalid_name_fails(self):
-        """Test API rejects update a businesses invalid business name (PUT request)"""
+        """Test API reject update with invalid business name (PUT request)"""
 
         self.testHelper.register_user(user_data)
         self.result = self.testHelper.login_user(user_data)
@@ -182,7 +182,7 @@ class TestBusinessCase(BaseTestSetUp):
         self.assertEqual(response.status_code, 409)
 
     def test_update_with_invalid_location_fails(self):
-        """Test API cannot update a businesses with invalid business location (PUT request)"""
+        """Test API reject update with invalid location (PUT request)"""
 
         self.testHelper.register_user(user_data)
         self.result = self.testHelper.login_user(user_data)
@@ -211,7 +211,7 @@ class TestBusinessCase(BaseTestSetUp):
         self.assertEqual(response.status_code, 200)
 
     def test_delete_unavailable_business_fails(self):
-        """Test API cannot delete a businesses that is not available (DELETE request)"""
+        """Test API rejects delete uncreated businesses (DELETE request)"""
 
         self.testHelper.register_user(user_data)
         self.result = self.testHelper.login_user(user_data)

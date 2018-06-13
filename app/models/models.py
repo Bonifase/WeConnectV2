@@ -1,4 +1,3 @@
-
 from app import db, app
 from flask_bcrypt import Bcrypt
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -185,7 +184,8 @@ class Review(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     _reviewbody = db.Column("reviewbody", db.String(80))
-    businessid = db.Column(db.Integer, db.ForeignKey('businesses.id', ondelete="CASCADE", onupdate="CASCADE"))
+    businessid = db.Column(db.Integer, db.ForeignKey(
+        'businesses.id', ondelete="CASCADE", onupdate="CASCADE"))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __init__(self, reviewbody, businessid, user_id):

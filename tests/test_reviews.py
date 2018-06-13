@@ -23,7 +23,7 @@ class TestReviewCase(BaseTestSetUp):
         self.assertEqual(response.status_code, 201)
 
     def test_add_reviews_for_unavailable_business_id_fails(self):
-        """Test API rejects create a review for a business that does not exist(POST request)"""
+        """Test API reject add review for uncreated business(POST request)"""
 
         self.testHelper.register_user(user_data)
         self.result = self.testHelper.login_user(user_data)
@@ -54,7 +54,7 @@ class TestReviewCase(BaseTestSetUp):
         self.assertEqual(response.status_code, 200)
 
     def test_unvailable_reviews_fails(self):
-        """Test API rejects retrieve business review for nonexistent business (GET request)"""
+        """Test API reject view review for uncreated business(GET request)"""
 
         self.testHelper.register_user(user_data)
         self.result = self.testHelper.login_user(user_data)

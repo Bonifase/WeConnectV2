@@ -1,5 +1,5 @@
 from flask import request, jsonify, json
-from flask_bcrypt import Bcrypt
+
 from app.errorhandler import *
 from jwt.exceptions import InvalidTokenError
 from .models import *
@@ -12,8 +12,6 @@ from app.helpers import clean_data
 from app.pagination import get_paginated_list
 from app.helpers import *
 from app import app
-bcrypt = Bcrypt(app)
-
 
 jwt = JWTManager(app)
 
@@ -37,8 +35,10 @@ def index():
 def register_user():
 
     data = request.get_json()
-    user = {'username': data.get('username'), 'email': data.get('email'),
-    'password': data.get('password')}
+    user = {
+        'username': data.get('username'), 
+        'email': data.get('email'),
+        'password': data.get('password')}
     try:
         cleaned_data = clean_data(**user)
     except AssertionError as error:
@@ -49,8 +49,8 @@ def register_user():
         available_emails = [user.email for user in users]
 
         if data.get('email') in available_emails:
-            return jsonify({"message":
-        "User already exists. Please login"}), 409
+            return jsonify({
+                "message": "User already exists. Please login"}), 409
         else:
             try:
                 user = User(
@@ -60,8 +60,8 @@ def register_user():
             except AssertionError as err:
                 return jsonify({'error': err.args[0]}), 409
 
-        return jsonify({"message":
-        "You registered successfully. Please log in"}), 201
+        return jsonify({
+            "message": "You registered successfully. Please log in"}), 201
 # Login user
 
 
@@ -76,24 +76,23 @@ def login():
     except AssertionError as error:
         return jsonify({'error': error.args[0]}), 409
 
-    if cleaned_data: 
-        user = User.query.filter_by(email=cleaned_data["email"]).first()
-        if user:
-            if Bcrypt().check_password_hash(
-                user.password, cleaned_data["password"]):
+    user = User.query.filter_by(email=cleaned_data["email"]).first()
+    
+    if user:
+        
+        if Bcrypt().check_password_hash(user.password, cleaned_data[
+                "password"]):
                 access_token = create_access_token(identity=user.id)           
                 if access_token:
                     response = {
                                 'message': 'You logged in successfully.',
                                 'access_token': access_token
-                            }
+                                }
                 return jsonify(response), 200
-
-            else:
-                return jsonify({"message": "wrong password"})
-
         else:
-            return jsonify({"message": "Invalid email, Please try again"}), 409
+            return jsonify({"message": "wrong password"})     
+    return jsonify({
+                     "message": "Invalid email, Please try again"}), 409
 # Reset password
 
 
@@ -101,8 +100,8 @@ def login():
 def reset():
 
     data = request.get_json()
-    email = data.get('email')   
-    if email != None:       
+    email = data.get('email')  
+    if email is not None:      
         user = User.query.filter_by(email=email).first()       
         if user:
 
@@ -112,11 +111,11 @@ def reset():
                 stored_reset_tokens.add(reset_token)
 
                 response = {
-                            'message': 'Use this token to reset your password.',
+                            'message': 'reset your password token.',
                             'reset_token': reset_token
                         }
             return jsonify(response), 200
-        else:          
+        else:         
             return jsonify(
                 {"message": 'User does not exixt, please register'}), 404
     else:
@@ -135,7 +134,8 @@ def confirm_reset(reset_token):
             reset_token in stored_reset_tokens
         except InvalidTokenError as error:
             return jsonify(
-                {'message': 'Reset password token is Invalid, Please request for a new one'}), 401
+                {
+                    'message': 'invvalid eset password token'}), 401
 
         try:
             user = User.query.filter_by(id=user_id).first()
@@ -166,8 +166,11 @@ def logout():
 def create_business():
 
     data = request.get_json()
-    business = {'name': data.get('name'), 'category': data.get('category'),
-    'location': data.get('location'), 'description': data.get('description')}
+    business = {
+        'name': data.get('name'), 
+        'category': data.get('category'),
+        'location': data.get('location'), 
+        'description': data.get('description')}
     try:
         cleaned_data = business_data(**business)
     except AssertionError as error:
@@ -175,7 +178,7 @@ def create_business():
 
     if cleaned_data:
         user = get_jwt_identity()
-        # check if the business details already in the list,otherwise 
+        # check if the business details already in the list.
         # create the object in the list
         available_names = [
             business.name.lower() for business in Business.businesses()]    
@@ -205,16 +208,18 @@ def create_business():
             "business list": myresponse}), 201
 """Get all the businesses"""
 
+
 @retrieve_all()
 def view_businesses():
-    mybusinesses = [{
-        business.id: [
-            "Business Name: " + business.name, 
-            "Business Category: " + business.category, 
-            "Business Location: "+business.location,
-            "Date Created: "+"{:%m/%d/%Y}".format(
-                business.date_created)] for business in Business.businesses()}]
-    if mybusinesses == [{}]:
+    mybusinesses = [
+        {"_id":business.id,
+            "Business_Name":business.name, 
+            "Business Category": business.category, 
+            "Business Location":business.location,
+            "Date Created":"{:%m/%d/%Y}".format(
+                business.date_created)} for business in Business.businesses()]
+
+    if mybusinesses == []:
         return jsonify({"message": "No Business Entry"}), 404
     else:
         return jsonify({"businesses": mybusinesses}), 200
@@ -302,7 +307,7 @@ def delete_business(id):
     else:
         return jsonify({"message": "No such Business", }), 404
 
-#search,filter business and implements pagination
+# search,filter business and implements pagination
 
 
 @search_business()
@@ -364,8 +369,9 @@ def search_business():
                 'Business Name: '+business.name,
                 'Business Location: '+business.location,
                 'Business Category: '+business.category,
-                "Date Created: "+"{:%m/%d/%Y}".format(business.date_created
-                )] for business in Business.query.filter_by(location=request.args.get('location')).all()}]
+                "Date Created: "+"{:%m/%d/%Y}".format(business.date_created)
+                ] for business in Business.query.filter_by(
+                    location=request.args.get('location')).all()}]
         business_href += "&location: " + request.args.get('location')
         response = {"results": "ok",
                     "business_href": business_href % page,
@@ -432,7 +438,8 @@ def reviews(businessid):
 def myreviews(businessid):
     business_reviews = Review.query.all()
     target_reviews = [{
-        review.id: [review.businessid, review.reviewbody
+        review.id: [
+            review.businessid, review.reviewbody
         ] for review in business_reviews if review.businessid == businessid}]
     if target_reviews == [{}]:
         return jsonify({
