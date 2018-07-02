@@ -70,7 +70,7 @@ class User(db.Model):
         if match:
             self._password = Bcrypt().generate_password_hash(value).decode()
             return
-        assert 0, 'Invalid password'
+        assert 0, 'Password should contain numbers and characters'
 
     """defines new password attribute"""
     @hybrid_property

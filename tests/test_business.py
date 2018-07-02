@@ -17,7 +17,8 @@ class TestBusinessCase(BaseTestSetUp):
             business_data=business_data, token=self.token)
         response = self.testHelper.get_businesses()
         result = json.loads(response.data.decode())
-        self.assertIn(business_data['name'], result['businesses'][0]['1'][0])
+        self.assertIn(business_data['name'],
+                      result['businesses'][0]['Business_Name'])
         self.assertEqual(response.status_code, 200)
 
     def test_create_existing_business_fails(self):
@@ -32,7 +33,7 @@ class TestBusinessCase(BaseTestSetUp):
             business_data=business_data, token=self.token)
         result = json.loads(response.data.decode())
         self.assertEqual(
-            result['error'], "Business already Exist, use another name")
+            result['message'], "Business already Exist, use another name")
         self.assertEqual(response.status_code, 409)
 
     def test_short_business_name_does_not_work(self):
@@ -44,7 +45,7 @@ class TestBusinessCase(BaseTestSetUp):
         response = self.testHelper.create_business(
             business_data=short_business_name, token=self.token)
         result = json.loads(response.data.decode())
-        self.assertEqual(result["error"], "Invalid name")
+        self.assertEqual(result["message"], "Invalid name")
         self.assertEqual(response.status_code, 409)
 
     def test_integer_business_name_does_not_work(self):
@@ -56,7 +57,7 @@ class TestBusinessCase(BaseTestSetUp):
         response = self.testHelper.create_business(
             business_data=integer_business_name, token=self.token)
         result = json.loads(response.data.decode())
-        self.assertEqual(result["error"], "Invalid name")
+        self.assertEqual(result["message"], "Invalid name")
         self.assertEqual(response.status_code, 409)
 
     def test_empty_business_name_fails(self):
@@ -68,7 +69,7 @@ class TestBusinessCase(BaseTestSetUp):
         response = self.testHelper.create_business(
             business_data=empty_business_name, token=self.token)
         result = json.loads(response.data.decode())
-        self.assertEqual(result["error"], "Invalid name")
+        self.assertEqual(result["message"], "Invalid name")
         self.assertEqual(response.status_code, 409)
 
     def test_missing_business_key_name_doesnt_work(self):
@@ -80,7 +81,8 @@ class TestBusinessCase(BaseTestSetUp):
         response = self.testHelper.create_business(
             business_data=missing_business_key_name, token=self.token)
         result = json.loads(response.data.decode())
-        self.assertEqual(result["error"], "name key is missing")
+        print("result", result)
+        self.assertEqual(result["message"], "name key is missing")
         self.assertEqual(response.status_code, 409)
 
     def test_create_new_business_works(self):
@@ -107,7 +109,7 @@ class TestBusinessCase(BaseTestSetUp):
         response = self.testHelper.get_business_by_id(businessid=1)
         result = json.loads(response.data.decode())
         self.assertIn(
-            business_data['name'], result['business']['Business Name'])
+            business_data['name'], result['business']['Name'])
         self.assertEqual(response.status_code, 200)
 
     def test_update_unavailable_businesses_fails(self):
@@ -163,7 +165,7 @@ class TestBusinessCase(BaseTestSetUp):
         response = self.testHelper.update_business(
             update_data=business_data, token=self.token, businessid=1)
         result = json.loads(response.data.decode())
-        self.assertIn(result["error"],
+        self.assertIn(result["message"],
                       "Business already Exist, use another name")
         self.assertEqual(response.status_code, 409)
 
@@ -178,7 +180,7 @@ class TestBusinessCase(BaseTestSetUp):
         response = self.testHelper.update_business(
             update_data=empty_business_name, token=self.token, businessid=1)
         result = json.loads(response.data.decode())
-        self.assertIn(result["error"], "Invalid name")
+        self.assertIn(result["message"], "Invalid name")
         self.assertEqual(response.status_code, 409)
 
     def test_update_with_invalid_location_fails(self):
@@ -190,10 +192,10 @@ class TestBusinessCase(BaseTestSetUp):
         self.testHelper.create_business(
             business_data=business_data, token=self.token)
         response = self.testHelper.update_business(
-            update_data=invalid_business_location, 
+            update_data=invalid_business_location,
             token=self.token, businessid=1)
         result = json.loads(response.data.decode())
-        self.assertIn(result["error"], "Invalid location")
+        self.assertIn(result["message"], "Invalid location")
         self.assertEqual(response.status_code, 409)
 
     def test_delete_business_works(self):

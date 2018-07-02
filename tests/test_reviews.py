@@ -15,9 +15,9 @@ class TestReviewCase(BaseTestSetUp):
         self.result = self.testHelper.login_user(user_data)
         self.token = json.loads(self.result.data.decode())['access_token']
         self.testHelper.create_business(
-          business_data=business_data, token=self.token)
+            business_data=business_data, token=self.token)
         response = self.testHelper.add_business_review(
-          review_data=review_data, businessid=1, token=self.token)
+            review_data=review_data, businessid=1, token=self.token)
         result = json.loads(response.data.decode())
         self.assertEqual(result["message"], "Review added Successfully")
         self.assertEqual(response.status_code, 201)
@@ -29,9 +29,9 @@ class TestReviewCase(BaseTestSetUp):
         self.result = self.testHelper.login_user(user_data)
         self.token = json.loads(self.result.data.decode())['access_token']
         self.testHelper.create_business(
-          business_data=business_data, token=self.token)
+            business_data=business_data, token=self.token)
         response = self.testHelper.add_business_review(
-          review_data=review_data, token=self.token, businessid=2)
+            review_data=review_data, token=self.token, businessid=2)
         result = json.loads(response.data.decode())
         self.assertEqual(result["message"],
                          "Business with that ID does not exist")
@@ -44,27 +44,11 @@ class TestReviewCase(BaseTestSetUp):
         self.result = self.testHelper.login_user(user_data)
         self.token = json.loads(self.result.data.decode())['access_token']
         self.testHelper.create_business(
-          business_data=business_data, token=self.token)
+            business_data=business_data, token=self.token)
         self.testHelper.add_business_review(
-          review_data=review_data, businessid=1, token=self.token)
+            review_data=review_data, businessid=1, token=self.token)
         response = self.testHelper.rerieve_all_reviews(businessid=1)
         result = json.loads(response.data.decode())
-        
-        self.assertIn(review_data["description"], result["Reviews"][0]["1"][1])
+
+        self.assertIn(review_data["description"], result['Reviews'][0]['body'])
         self.assertEqual(response.status_code, 200)
-
-    def test_unvailable_reviews_fails(self):
-        """Test API reject view review for uncreated business(GET request)"""
-
-        self.testHelper.register_user(user_data)
-        self.result = self.testHelper.login_user(user_data)
-        self.token = json.loads(self.result.data.decode())['access_token']
-        self.testHelper.create_business(
-          business_data=business_data, token=self.token)
-        self.testHelper.add_business_review(
-          review_data=review_data, businessid=1, token=self.token)
-        response = self.testHelper.rerieve_all_reviews(businessid=3)
-        result = json.loads(response.data.decode())
-        self.assertEqual(result["message"],
-                         "No Reviews available for that Business")
-        self.assertEqual(response.status_code, 404)
