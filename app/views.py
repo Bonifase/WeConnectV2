@@ -275,11 +275,6 @@ def update_business(businessid):
         if target_business:
             available_names = [business.name.lower(
             ) for business in Business.businesses()]
-
-            if cleaned_data["name"].lower() in available_names:
-                return jsonify(
-                    {"message": "Business already Exist, use another name"}), 401
-
             if user != target_business.userid:
 
                 return jsonify(
@@ -366,7 +361,7 @@ def search_business():
         business_href += "&category: " + request.args.get('category')
         response = {"results": "ok",
                     "business_href": business_href % page,
-                    "businesses": businesses}
+                    "filteredBusinesses": businesses}
 
         return jsonify(response)
     """Filter business by location"""
