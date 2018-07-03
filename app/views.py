@@ -87,7 +87,8 @@ def login():
             if access_token:
                 response = {
                     'message': 'You logged in successfully.',
-                    'access_token': access_token
+                    'access_token': access_token,
+                    'username':user.username
                 }
             return jsonify(response), 200
         else:
@@ -276,7 +277,7 @@ def update_business(businessid):
 
             if cleaned_data["name"].lower() in available_names:
                 return jsonify(
-                    {"message": "Business already Exist, use another name"}), 409
+                    {"message": "Business already Exist, use another name"}), 401
 
             if user != target_business.userid:
 

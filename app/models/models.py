@@ -81,7 +81,7 @@ class User(db.Model):
     a new password attribute for user object"""
     @new_password.setter
     def new_password(self, value):
-      
+
         match = password_pattern(value)
 
         if match:
@@ -103,7 +103,7 @@ class Business(db.Model):
     description = db.Column(db.Text)
     userid = db.Column(db.Integer, db.ForeignKey(
         'users.id', ondelete='CASCADE', onupdate='CASCADE'))
-    reviews = db.relationship('Review', backref='reviewowner', lazy='dynamic') 
+    reviews = db.relationship('Review', backref='reviewowner', lazy='dynamic')
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
 
     def __init__(self, name, category, location, description, userid):
@@ -126,6 +126,7 @@ class Business(db.Model):
             assert 0, 'This business is registered to another user'
 
     """method that saves the business to the database"""
+
     def save_business(self):
         db.session.add(self)
         db.session.commit()
@@ -145,7 +146,7 @@ class Business(db.Model):
 
     """sets the name of the business attribute"""
     @name.setter
-    def name(self, value):       
+    def name(self, value):
         match = name_pattern(value)
         if match:
             self._name = value
@@ -157,7 +158,7 @@ class Business(db.Model):
         return self._category
 
     @category.setter
-    def category(self, value):       
+    def category(self, value):
         match = attribute_pattern(value)
         if match:
             self._category = value
@@ -169,7 +170,7 @@ class Business(db.Model):
         return self._location
 
     @location.setter
-    def location(self, value):      
+    def location(self, value):
         match = attribute_pattern(value)
         if match:
             self._location = value
@@ -207,9 +208,9 @@ class Review(db.Model):
         return self._reviewbody
 
     @reviewbody.setter
-    def reviewbody(self, value):      
+    def reviewbody(self, value):
         match = attribute_pattern(value)
         if match:
             self._reviewbody = value
             return
-        assert 0, 'Invalid category'      
+        assert 0, 'Invalid category'

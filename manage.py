@@ -33,7 +33,7 @@ class User(db.Model):
 class Business(db.Model):
     """This class defines the businesses table."""
 
-    __tablename__ = 'business'
+    __tablename__ = 'businesses'
 
     __searchable__ = ['name', 'category', 'location']
 
@@ -44,14 +44,16 @@ class Business(db.Model):
     description = db.Column(db.Text)
     userid = db.Column(db.Integer, db.ForeignKey('users.id'))
     reviews = db.relationship(
-        'Review', primaryjoin="and_(Business.id==Review.businessid )") 
+        'Review', primaryjoin="and_(Business.id==Review.businessid )")
     date_created = db.Column(db.DateTime, default=db.func.current_timestamp())
 
 
 class Review(db.Model):
+    __tablename__ = 'reviews'
+
     id = db.Column(db.Integer, primary_key=True)
     reviewbody = db.Column(db.String(100))
-    businessid = db.Column(db.Integer, db.ForeignKey('business.id'))
+    businessid = db.Column(db.Integer, db.ForeignKey('businesses.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 
@@ -63,7 +65,6 @@ def test():
     if result.wasSuccessful():
         return 0
     return 1
-
 
 
 if __name__ == '__main__':
