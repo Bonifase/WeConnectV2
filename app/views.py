@@ -83,12 +83,13 @@ def login():
 
         if Bcrypt().check_password_hash(user.password, cleaned_data[
                 "password"]):
-            access_token = create_access_token(identity=user.id)
+            access_token = create_access_token(
+                identity=user.id, expires_delta=datetime.timedelta(minutes=60))
             if access_token:
                 response = {
                     'message': 'You logged in successfully.',
                     'access_token': access_token,
-                    'username':user.username
+                    'username': user.username
                 }
             return jsonify(response), 200
         else:
