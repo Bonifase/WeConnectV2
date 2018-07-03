@@ -343,7 +343,7 @@ def search_business():
             Business.name.ilike(sql_match)).all()]
         response = {"results": "ok",
                     "business_href": business_href % page,
-                    "businesses": businesses}
+                    "filteredBusinesses": businesses}
 
         return jsonify(response)
     """Filter business by category"""
@@ -380,7 +380,7 @@ def search_business():
         business_href += "&location: " + request.args.get('location')
         response = {"results": "ok",
                     "business_href": business_href % page,
-                    "businesses": businesses}
+                    "filteredBusinesses": businesses}
 
         return jsonify(response)
 
