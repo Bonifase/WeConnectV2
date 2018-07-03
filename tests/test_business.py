@@ -167,7 +167,7 @@ class TestBusinessCase(BaseTestSetUp):
         result = json.loads(response.data.decode())
         self.assertIn(result["message"],
                       "Business already Exist, use another name")
-        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.status_code, 401)
 
     def test_update_with_invalid_name_fails(self):
         """Test API reject update with invalid business name (PUT request)"""
