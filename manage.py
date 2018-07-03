@@ -3,11 +3,11 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
+from app import app
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = "Thisismysecretkey"
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:boni@orwa@localhost/weconnect"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True or False
+# app = Flask(__name__)
+# app.config['SECRET_KEY'] = "Thisismysecretkey"
+# app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:boni@orwa@localhost/weconnect"
 db = SQLAlchemy(app)
 
 """initialize migrate"""
