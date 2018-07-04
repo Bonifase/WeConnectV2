@@ -90,7 +90,8 @@ def login():
                 response = {
                     'message': 'You logged in successfully.',
                     'access_token': access_token,
-                    'username': user.username
+                    'username': user.username,
+                    'userId': user.id
                 }
             return jsonify(response), 200
         else:
@@ -221,6 +222,7 @@ def create_business():
 def view_businesses():
     mybusinesses = [
         {"_id": business.id,
+        "owner": business.userid,
             "Business_Name": business.name,
             "Business_category": business.category,
             "Business_location": business.location,
@@ -320,6 +322,7 @@ def search_business():
     """business URL template"""
     business_href = "/businesses/search?page=%s"
     businesses = [{"_id": business.id,
+                   "owner": business.userid,
                    "Business_Name": business.name,
                    "Business_category": business.category,
                    "Business_location": business.location,
