@@ -222,7 +222,7 @@ def create_business():
 def view_businesses():
     mybusinesses = [
         {"_id": business.id,
-        "owner": business.userid,
+         "owner": business.userid,
             "Business_Name": business.name,
             "Business_category": business.category,
             "Business_location": business.location,
@@ -245,6 +245,7 @@ def get_business(id):
         target_business = mybusiness[0]
         return jsonify({"business": {
             '_id': target_business.id,
+            "owner": target_business.userid,
             'Name': target_business.name,
             'Category': target_business.category,
             'Location': target_business.location,
