@@ -245,7 +245,7 @@ def get_business(id):
         target_business = mybusiness[0]
         return jsonify({"business": {
             '_id': target_business.id,
-            "owner": target_business.userid,
+            "owner": target_business,
             'Name': target_business.name,
             'Category': target_business.category,
             'Location': target_business.location,
@@ -339,6 +339,7 @@ def search_business():
         limit = int(request.args.get('limit', 20))
         sql_match = '%'+request.args.get('q')+'%'
         businesses = [{"_id": business.id,
+                       "owner": business.userid,
                        "Business_Name": business.name,
                        "Business_category": business.category,
                        "Business_location": business.location,
@@ -355,14 +356,15 @@ def search_business():
     if "category" in request.args:
         page = int(request.args.get('page', 1))
         limit = int(request.args.get('limit', 20))
-        businesses = [{business.id: [
-            'Business Name: '+business.name,
-            'Business Location: '+business.location,
-            'Business Category: '+business.category,
-            "Date Created: "+"{:%m/%d/%Y}".format(
-                business.date_created)
-        ] for business in Business.query.filter_by(
-            category=request.args.get('category')).all()}]
+        businesses = [{"_id": business.id,
+                       "owner": business.userid,
+                       "Business_Name": business.name,
+                       "Business_category": business.category,
+                       "Business_location": business.location,
+                       'Business_description': business.description,
+                       "Date_Created": "{:%m/%d/%Y}".format(
+                           business.date_created)} for business in Business.query.filter_by(
+            category=request.args.get('category')).all()]
         business_href += "&category: " + request.args.get('category')
         response = {"results": "ok",
                     "business_href": business_href % page,
@@ -374,14 +376,15 @@ def search_business():
     if "location" in request.args:
         page = int(request.args.get('page', 1))
         limit = int(request.args.get('limit', 20))
-        businesses = [
-            {business.id: [
-                'Business Name: '+business.name,
-                'Business Location: '+business.location,
-                'Business Category: '+business.category,
-                "Date Created: "+"{:%m/%d/%Y}".format(business.date_created)
-            ] for business in Business.query.filter_by(
-                location=request.args.get('location')).all()}]
+        businesses = [{"_id": business.id,
+                       "owner": business.userid,
+                       "Business_Name": business.name,
+                       "Business_category": business.category,
+                       "Business_location": business.location,
+                       'Business_description': business.description,
+                       "Date_Created": "{:%m/%d/%Y}".format(
+                           business.date_created)} for business in Business.query.filter_by(
+            location=request.args.get('location')).all()]
         business_href += "&location: " + request.args.get('location')
         response = {"results": "ok",
                     "business_href": business_href % page,
