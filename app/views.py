@@ -243,9 +243,10 @@ def get_business(id):
     ) if business.id == id]
     if mybusiness:
         target_business = mybusiness[0]
+        print("hahahahahaha", target_business)
         return jsonify({"business": {
             '_id': target_business.id,
-            "owner": target_business,
+            "owner": target_business.userid,
             'Name': target_business.name,
             'Category': target_business.category,
             'Location': target_business.location,
