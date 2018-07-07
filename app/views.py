@@ -405,12 +405,15 @@ def search_business():
         paginated_data = pagination['results']
         previous_page = pagination['previous']
         next_page = pagination['next']
-        mybusinesses = [{business.id: [
-            "Business Name: "+business.name,
-            "Business Category: "+business.category,
-            "Business Location: "+business.location,
-            "Date Created: "+"{:%m/%d/%Y}".format(business.date_created)]
-            for business in paginated_data}]
+        mybusinesses = [{"_id": business.id,
+                       "owner": business.userid,
+                       "Business_Name": business.name,
+                       "Business_category": business.category,
+                       "Business_location": business.location,
+                       'Business_description': business.description,
+                       "Date_Created": "{:%m/%d/%Y}".format(
+                           business.date_created)}
+            for business in paginated_data]
         response = {
             "business_href": business_href % page,
             "Prevoius_page": previous_page,
