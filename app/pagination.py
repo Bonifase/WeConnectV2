@@ -10,6 +10,7 @@ def get_paginated_list(url, start, limit):
         abort(404)
     # make response
     obj = {}
+    obj['results'] = results
     obj['start'] = start
     obj['limit'] = limit
     obj['count'] = count
@@ -22,7 +23,7 @@ def get_paginated_list(url, start, limit):
         limit_copy = start - 1
         obj['previous'] = url + '?start=%d&limit=%d' % (start_copy, limit_copy)
     # make next url
-    if (start-1)*limit + limit > count: 
+    if (start-1)*limit + limit > count:
         obj['next'] = ''
     else:
         start_copy = start + limit
