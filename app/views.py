@@ -414,9 +414,6 @@ def search_business():
             "_id": business.id,
             "owner": business.userid,
             "Business_Name": business.name,
-            "per_page": limit,
-            "page": page,
-            "total_pages": count,
             "Business_category": business.category,
             "Business_location": business.location,
             'Business_description': business.description,
@@ -424,10 +421,10 @@ def search_business():
                 business.date_created)}
             for business in paginated_data]
         response = {
-            "business_href": business_href % page,
-            "Prevoius_page": previous_page,
-            "Next_page": next_page,
-            "businesses": mybusinesses}
+            "businesses": mybusinesses, "pagination": {"per_page": limit,
+                                                       "page": page,
+                                                       "total_pages": count, "Prevoius_page": previous_page,
+                                                       "Next_page": next_page}}
 
         return jsonify(response)
 
