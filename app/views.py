@@ -401,13 +401,13 @@ def search_business():
             return jsonify({"error": "Invalid pagination limit value"})
 
         pagination = get_paginated_list(
-            start=page, limit=limit, url="/businesses/search")
+            page=page, limit=limit, url="/businesses/search")
         paginated_data = pagination['results']
         previous_page = pagination['previous']
         next_page = pagination["next"]
         count = pagination['count']
         limit = pagination['limit']
-        start = pagination['start']
+        page = pagination['page']
         mybusinesses = [{
             "Next_page": next_page,
             "Prevoius_page": previous_page,
