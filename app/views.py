@@ -405,7 +405,10 @@ def search_business():
         paginated_data = pagination['results']
         previous_page = pagination['previous']
         next_page = pagination['next']
-        mybusinesses = [{"_id": business.id,
+        mybusinesses = [{
+                       "Next_page": next_page,
+                       "Prevoius_page": previous_page,
+                       "_id": business.id,
                        "owner": business.userid,
                        "Business_Name": business.name,
                        "Business_category": business.category,
