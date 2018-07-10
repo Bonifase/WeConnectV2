@@ -151,7 +151,7 @@ def confirm_reset(reset_token):
             db.session.commit()
             return jsonify({"message": "password reset Successful"})
         except AssertionError as error:
-            return jsonify({"message": error.args[0]})
+            return jsonify({"message": error.args[0]}), 400
 
     return jsonify({"message": "Please provide your new password"})
 
@@ -350,7 +350,7 @@ def search_business():
             Business.name.ilike(sql_match)).all()]
         response = {"results": "ok",
                     "business_href": business_href % page,
-                    "filteredBusinesses": businesses}
+                    "businesses": businesses}
 
         return jsonify(response)
     """Filter business by category"""
@@ -369,7 +369,7 @@ def search_business():
         business_href += "&category: " + request.args.get('category')
         response = {"results": "ok",
                     "business_href": business_href % page,
-                    "filteredBusinesses": businesses}
+                    "businesses": businesses}
 
         return jsonify(response)
     """Filter business by location"""
@@ -389,7 +389,7 @@ def search_business():
         business_href += "&location: " + request.args.get('location')
         response = {"results": "ok",
                     "business_href": business_href % page,
-                    "filteredBusinesses": businesses}
+                    "businesses": businesses}
 
         return jsonify(response)
 
